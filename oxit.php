@@ -513,6 +513,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'holder'        => $holder,
                 'iban'          => $iban,
                 'desc_required' => isset($_POST['desc_required']),
+                'desc_text'     => trim((string)($_POST['desc_text'] ?? '')),
             ];
             $new['bank_accounts'] = $accounts;
             json_save('settings', $new);
@@ -1538,7 +1539,10 @@ elseif ($page === 'odeme-ayarlari'):
                             <td><?= ($acc['bank'] ?? '') !== '' ? e($acc['bank']) : '<span class="muted">—</span>' ?></td>
                             <td><strong><?= e($acc['holder'] ?? '') ?></strong></td>
                             <td class="nowrap"><code><?= e(format_iban($acc['iban'])) ?></code></td>
-                            <td><?= !empty($acc['desc_required']) ? '<span class="badge st-odeme-bekliyor">Zorunlu</span>' : '<span class="badge badge-muted">Serbest</span>' ?></td>
+                            <td>
+                                <?= !empty($acc['desc_required']) ? '<span class="badge st-odeme-bekliyor">Zorunlu</span>' : '<span class="badge badge-muted">Serbest</span>' ?>
+                                <?php if (($acc['desc_text'] ?? '') !== ''): ?><br><small class="muted">"<?= e($acc['desc_text']) ?>"</small><?php else: ?><br><small class="muted">Sipariş numarası</small><?php endif; ?>
+                            </td>
                             <td class="ta-right">
                                 <form method="post" action="oxit.php" class="inline-form" data-confirm="Bu banka hesabı silinecek. Emin misiniz?">
                                     <?= csrf_field() ?>
@@ -1571,11 +1575,16 @@ elseif ($page === 'odeme-ayarlari'):
                     <label for="bk-iban">IBAN *</label>
                     <input type="text" id="bk-iban" name="iban" required placeholder="TR00 0000 0000 0000 0000 0000 00" style="text-transform:uppercase">
                 </div>
+                <div class="form-field" style="margin-top:12px">
+                    <label for="bk-desc">Özel Ödeme Açıklaması (isteğe bağlı)</label>
+                    <input type="text" id="bk-desc" name="desc_text" maxlength="120" placeholder="ör. Yedek parça bedeli">
+                </div>
+                <p class="muted small" style="margin-top:6px">Bankanın istediği özel bir açıklama varsa buraya yazın; müşteriden ödeme açıklamasına bu metni yazması istenir. Boş bırakılırsa müşteriden sipariş numarasını yazması istenir.</p>
                 <label class="check" style="margin-top:14px">
                     <input type="checkbox" name="desc_required">
                     <span>Ödeme açıklaması zorunlu olsun</span>
                 </label>
-                <p class="muted small" style="margin-top:6px">İşaretlenirse müşteriye, bu hesaba yapılan ödemelerde açıklama alanına sipariş numarasını yazmasının zorunlu olduğu; açıklamasız veya hatalı ödemelerin iade edileceği uyarısı gösterilir.</p>
+                <p class="muted small" style="margin-top:6px">İşaretlenirse müşteriye, bu hesaba yapılan ödemelerde belirtilen açıklamayı yazmasının zorunlu olduğu; açıklamasız veya hatalı ödemelerin iade edileceği uyarısı gösterilir.</p>
                 <button type="submit" class="btn btn-primary" style="margin-top:14px">Hesabı Ekle</button>
             </form>
         </div>

@@ -51,23 +51,48 @@ require __DIR__ . '/includes/header.php';
             <h3>Ödeme Talimatları — <?= e($methodLabel) ?></h3>
             <?php if (!empty($bankAccounts)): ?>
                 <?php $anyDescRequired = (bool)array_filter($bankAccounts, fn($a) => !empty($a['desc_required'])); ?>
-                <p class="payment-note">Sipariş tutarını aşağıdaki hesaba gönderin ve ödeme açıklamasına <strong>sipariş numaranızı (<?= e($order['no']) ?>)</strong> yazın. Ödemeniz hesabımıza ulaşıp doğrulandığında siparişiniz onaylanır ve hazırlanmaya başlar.</p>
+                <p class="payment-note">Sipariş tutarını aşağıdaki hesaba gönderin ve ödeme açıklamasına hesabın yanında belirtilen <strong>açıklamayı</strong> yazın. Ödemeniz hesabımıza ulaşıp doğrulandığında siparişiniz onaylanır ve hazırlanmaya başlar.</p>
                 <?php if ($anyDescRequired): ?>
                     <div class="notice notice-warning">
-                        <strong>Önemli:</strong> "Açıklama Zorunlu" işaretli hesaplara yapacağınız ödemelerde, açıklama alanına sipariş numaranızı (<strong><?= e($order['no']) ?></strong>) yazmanız <strong>zorunludur</strong>. Açıklaması boş bırakılan veya hatalı yazılan ödemeler <strong>iade edilir</strong> ve siparişiniz işleme alınmaz.
+                        <strong>Önemli:</strong> "Açıklama Zorunlu" işaretli hesaplara yapacağınız ödemelerde, açıklama alanına hesabın altında belirtilen açıklamayı <strong>eksiksiz yazmanız zorunludur</strong>. Açıklaması boş bırakılan veya hatalı yazılan ödemeler <strong>iade edilir</strong> ve siparişiniz işleme alınmaz.
                     </div>
                 <?php endif; ?>
-                <?php foreach ($bankAccounts as $acc): ?>
-                    <div class="iban-row">
-                        <div class="iban-meta">
-                            <span class="iban-bank-line">
-                                <?php if (($acc['bank'] ?? '') !== ''): ?><span class="iban-bank"><?= e($acc['bank']) ?></span><?php endif; ?>
-                                <?php if (!empty($acc['desc_required'])): ?><span class="badge badge-warning">Açıklama Zorunlu</span><?php endif; ?>
-                            </span>
-                            <span class="iban-holder"><?= e($acc['holder'] ?? '') ?></span>
-                            <span class="iban-number"><?= e(format_iban($acc['iban'])) ?></span>
+                <?php foreach ($bankAccounts as $acc):
+                    $paymentDesc = ($acc['desc_text'] ?? '') !== '' ? (string)$acc['desc_text'] : (string)$order['no'];
+                ?>
+                    <div class="iban-card">
+                        <div class="iban-card-head">
+                            <?php if (($acc['bank'] ?? '') !== ''): ?><span class="iban-bank"><?= e($acc['bank']) ?></span><?php endif; ?>
+                            <?php if (!empty($acc['desc_required'])): ?><span class="badge badge-warning">Açıklama Zorunlu</span><?php endif; ?>
                         </div>
-                        <button type="button" class="btn btn-ghost btn-copy" data-copy="<?= e(normalize_iban($acc['iban'])) ?>">Kopyala</button>
+                        <div class="iban-field">
+                            <div class="iban-field-text">
+                                <span class="iban-field-label">Hesap Sahibi</span>
+                                <span class="iban-field-value"><?= e($acc['holder'] ?? '') ?></span>
+                            </div>
+                            <button type="button" class="btn btn-ghost btn-sm btn-copy" data-copy="<?= e($acc['holder'] ?? '') ?>">Kopyala</button>
+                        </div>
+                        <div class="iban-field">
+                            <div class="iban-field-text">
+                                <span class="iban-field-label">IBAN</span>
+                                <span class="iban-field-value mono"><?= e(format_iban($acc['iban'])) ?></span>
+                            </div>
+                            <button type="button" class="btn btn-ghost btn-sm btn-copy" data-copy="<?= e(normalize_iban($acc['iban'])) ?>">Kopyala</button>
+                        </div>
+                        <div class="iban-field">
+                            <div class="iban-field-text">
+                                <span class="iban-field-label">Ödeme Açıklaması<?= !empty($acc['desc_required']) ? ' (zorunlu)' : '' ?></span>
+                                <span class="iban-field-value"><?= e($paymentDesc) ?></span>
+                            </div>
+                            <button type="button" class="btn btn-ghost btn-sm btn-copy" data-copy="<?= e($paymentDesc) ?>">Kopyala</button>
+                        </div>
+                        <div class="iban-field">
+                            <div class="iban-field-text">
+                                <span class="iban-field-label">Tutar</span>
+                                <span class="iban-field-value"><?= e(format_price($order['total'] ?? 0, $settings['currency'])) ?></span>
+                            </div>
+                            <button type="button" class="btn btn-ghost btn-sm btn-copy" data-copy="<?= e(number_format((float)($order['total'] ?? 0), 2, ',', '.')) ?>">Kopyala</button>
+                        </div>
                     </div>
                 <?php endforeach; ?>
                 <?php if ($settings['whatsapp'] !== ''): ?>
