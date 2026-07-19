@@ -12,7 +12,7 @@ $navCurrent = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= e($pageTitle) ?> | <?= e($settings['site_title']) ?></title>
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="<?= e(asset('assets/style.css')) ?>">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 </head>
 <body>
@@ -20,15 +20,15 @@ $navCurrent = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
     <div class="container header-inner">
         <a href="index.php" class="logo" aria-label="<?= e($settings['site_title']) ?> anasayfa">
             <?php if ($logoUrl): ?>
-                <img class="logo-img" src="<?= e($logoUrl) ?>" alt="<?= e($settings['site_title']) ?>">
+                <img class="logo-img" src="<?= e($logoUrl) ?>" alt="" width="38" height="38">
             <?php else: ?>
                 <svg class="logo-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="12" cy="12" r="9"></circle>
                     <circle cx="12" cy="12" r="3"></circle>
                     <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"></path>
                 </svg>
-                <span class="logo-text"><?= e($settings['site_title']) ?></span>
             <?php endif; ?>
+            <span class="logo-text"><?= e($settings['site_title']) ?></span>
         </a>
 
         <nav class="main-nav" id="site-nav">

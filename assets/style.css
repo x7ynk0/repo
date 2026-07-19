@@ -58,7 +58,15 @@ a { color: inherit; text-decoration: none; }
     min-width: 0;
 }
 .logo-mark { color: var(--accent); flex-shrink: 0; width: 28px; height: 28px; }
-.logo-img { max-height: 40px; width: auto; max-width: 200px; object-fit: contain; display: block; }
+.logo-img {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 9px;
+    display: block;
+    background: #fff;
+}
 .logo-text {
     font-size: 1.05rem;
     font-weight: 700;
@@ -431,7 +439,7 @@ a { color: inherit; text-decoration: none; }
 
     /* Kompakt mobil header + açılır menü */
     .header-inner { min-height: 54px; padding-top: 6px; padding-bottom: 6px; }
-    .logo-img { max-height: 32px; max-width: 160px; }
+    .logo-img { width: 30px; height: 30px; border-radius: 7px; }
     .logo-text { font-size: .98rem; }
     .logo-mark { width: 24px; height: 24px; }
     .nav-toggle { display: flex; }

@@ -347,6 +347,17 @@ function flash_get(): array
  *  Yardımcılar
  * ========================================================= */
 
+/**
+ * Statik dosya adresine sürüm damgası ekler; tarayıcı önbelleği
+ * dosya her değiştiğinde otomatik olarak yenilenir.
+ */
+function asset(string $path): string
+{
+    $file = BASE_PATH . '/' . ltrim($path, '/');
+    $version = is_file($file) ? (string)filemtime($file) : '1';
+    return $path . '?v=' . $version;
+}
+
 function e(?string $value): string
 {
     return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -473,6 +484,45 @@ function handle_image_uploads(array $files, int $limit, array &$errors): array
         }
     }
     return $saved;
+}
+
+/**
+ * Yüklenen logoyu ortadan kare olarak kırpar, boyutlandırır ve
+ * şeffaflığı koruyarak PNG olarak kaydeder. Başarıda dosya adını,
+ * hatada null döndürür.
+ */
+function process_square_logo(string $tmpPath, int $size = 256): ?string
+{
+    $raw = @file_get_contents($tmpPath);
+    if ($raw === false) {
+        return null;
+    }
+    $src = @imagecreatefromstring($raw);
+    if ($src === false) {
+        return null;
+    }
+
+    $w = imagesx($src);
+    $h = imagesy($src);
+    $edge = min($w, $h);
+    $srcX = (int)(($w - $edge) / 2);
+    $srcY = (int)(($h - $edge) / 2);
+
+    $out = imagecreatetruecolor($size, $size);
+    imagealphablending($out, false);
+    imagesavealpha($out, true);
+    $transparent = imagecolorallocatealpha($out, 0, 0, 0, 127);
+    imagefill($out, 0, 0, $transparent);
+
+    imagecopyresampled($out, $src, 0, 0, $srcX, $srcY, $size, $size, $edge, $edge);
+    imagedestroy($src);
+
+    $name   = 'logo_' . bin2hex(random_bytes(6)) . '.png';
+    $target = UPLOAD_PATH . '/' . $name;
+    $ok = imagepng($out, $target, 6);
+    imagedestroy($out);
+
+    return $ok ? $name : null;
 }
 
 function delete_image_file(string $filename): void

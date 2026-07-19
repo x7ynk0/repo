@@ -19,6 +19,7 @@
                 <li><a href="iletisim.php">İletişim</a></li>
             </ul>
         </div>
+        <?php if ($settings['phone'] !== '' || $settings['whatsapp'] !== '' || $settings['email'] !== '' || $settings['address'] !== ''): ?>
         <div>
             <h4>İletişim</h4>
             <ul class="contact-list">
@@ -28,6 +29,7 @@
                 <?php if ($settings['address'] !== ''): ?><li><?= nl2br(e($settings['address'])) ?></li><?php endif; ?>
             </ul>
         </div>
+        <?php endif; ?>
     </div>
     <div class="footer-bottom">
         <div class="container">
@@ -39,6 +41,6 @@
         </div>
     </div>
 </footer>
-<script src="assets/app.js"></script>
+<script src="<?= e(asset('assets/app.js')) ?>"></script>
 </body>
 </html>

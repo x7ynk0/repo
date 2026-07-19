@@ -456,7 +456,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $new['logo'] = '';
         }
 
-        // Logo yükleme (tek dosya)
+        // Logo yükleme (tek dosya; otomatik kare kırpma)
         if (!empty($_FILES['logo']['name']) && is_string($_FILES['logo']['name'])) {
             $lf = $_FILES['logo'];
             if (($lf['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
@@ -468,16 +468,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } elseif (@getimagesize((string)$lf['tmp_name']) === false) {
                     flash_set('error', 'Yüklenen logo geçerli bir görsel dosyası değil.');
                 } else {
-                    $logoName = 'logo_' . bin2hex(random_bytes(6)) . '.' . ($ext === 'jpeg' ? 'jpg' : $ext);
-                    $tmpPath  = (string)$lf['tmp_name'];
-                    $target   = UPLOAD_PATH . '/' . $logoName;
-                    if (is_uploaded_file($tmpPath) ? move_uploaded_file($tmpPath, $target) : rename($tmpPath, $target)) {
+                    $logoName = process_square_logo((string)$lf['tmp_name']);
+                    if ($logoName !== null) {
                         if (($new['logo'] ?? '') !== '') {
                             delete_image_file($new['logo']);
                         }
                         $new['logo'] = $logoName;
                     } else {
-                        flash_set('error', 'Logo sunucuya kaydedilemedi.');
+                        flash_set('error', 'Logo işlenemedi. Lütfen farklı bir görsel deneyin.');
                     }
                 }
             } elseif (($lf['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
@@ -551,7 +549,7 @@ function admin_head(string $title): void
     echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
     echo '<meta name="robots" content="noindex, nofollow">';
     echo '<title>' . e($title) . ' | OXIT Yönetim</title>';
-    echo '<link rel="stylesheet" href="assets/admin.css">';
+    echo '<link rel="stylesheet" href="' . e(asset('assets/admin.css')) . '">';
     echo '<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">';
     echo '</head><body>';
 }
@@ -1169,7 +1167,7 @@ elseif ($page === 'ayarlar'):
         </div>
         <div class="form-section">
             <h3>Site Logosu</h3>
-            <p class="muted small">jpg, png, webp veya gif; en fazla 2 MB. Şeffaf arka planlı, yatay bir logo önerilir. Logo yüklenmezse site adı metin olarak gösterilir.</p>
+            <p class="muted small">jpg, png, webp veya gif; en fazla 2 MB. Yüklediğiniz görsel, header'da site adının solunda görünmek üzere <strong>otomatik olarak ortadan kare biçiminde kırpılır</strong>. En iyi sonuç için kare veya kareye yakın bir logo yükleyin.</p>
             <?php if ($logoUrl): ?>
                 <div class="logo-current">
                     <img src="<?= e($logoUrl) ?>" alt="Mevcut logo">
@@ -1278,6 +1276,6 @@ elseif ($page === 'profil'):
         </div>
     </div>
 </div>
-<script src="assets/admin.js"></script>
+<script src="<?= e(asset('assets/admin.js')) ?>"></script>
 </body>
 </html>
