@@ -1,0 +1,19 @@
+# Araç Yedek Parça — Apache yapılandırması
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # /oxit adresini yönetici paneline yönlendir (sorgu parametreleri korunur)
+    RewriteRule ^oxit/?$ oxit.php [QSA,L]
+</IfModule>
+
+# data klasörüne (JSON veriler) dışarıdan erişimi tamamen engelle
+<IfModule mod_alias.c>
+    RedirectMatch 403 ^/data(/|$)
+</IfModule>
+
+# Yedek/veri dosyalarına doğrudan erişimi engelle
+<FilesMatch "\.(json|lock|bak)$">
+    Require all denied
+</FilesMatch>

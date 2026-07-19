@@ -1,0 +1,5 @@
+# Çalışma verileri — sunucuda otomatik oluşturulur
+data/*.json
+uploads/*
+!uploads/.htaccess
+!uploads/index.html

@@ -1,0 +1,465 @@
+<?php
+declare(strict_types=1);
+
+/* =========================================================
+ *  JSON dosya depolama katmanı
+ * ========================================================= */
+
+function data_file(string $name): string
+{
+    return DATA_PATH . '/' . $name . '.json';
+}
+
+function json_load(string $name): array
+{
+    $file = data_file($name);
+    if (!is_file($file)) {
+        return [];
+    }
+    $fp = fopen($file, 'rb');
+    if ($fp === false) {
+        return [];
+    }
+    flock($fp, LOCK_SH);
+    $raw = stream_get_contents($fp);
+    flock($fp, LOCK_UN);
+    fclose($fp);
+    $decoded = json_decode((string)$raw, true);
+    return is_array($decoded) ? $decoded : [];
+}
+
+function json_save(string $name, array $data): bool
+{
+    $file = data_file($name);
+    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    return file_put_contents($file, $json, LOCK_EX) !== false;
+}
+
+function generate_id(): string
+{
+    return bin2hex(random_bytes(8));
+}
+
+/* =========================================================
+ *  İlk kurulum: veri klasörü ve varsayılan dosyalar
+ * ========================================================= */
+
+function ensure_storage(): void
+{
+    if (!is_dir(DATA_PATH)) {
+        mkdir(DATA_PATH, 0775, true);
+    }
+    if (!is_dir(UPLOAD_PATH)) {
+        mkdir(UPLOAD_PATH, 0775, true);
+    }
+
+    $htaccess = DATA_PATH . '/.htaccess';
+    if (!is_file($htaccess)) {
+        file_put_contents($htaccess, "Require all denied\n");
+    }
+    $uploadsHt = UPLOAD_PATH . '/.htaccess';
+    if (!is_file($uploadsHt)) {
+        file_put_contents($uploadsHt, "php_flag engine off\n<FilesMatch \"\\.(php|phtml|php5|phar|pl|py|cgi|sh)$\">\n  Require all denied\n</FilesMatch>\n");
+    }
+
+    if (!is_file(data_file('users'))) {
+        json_save('users', []);
+    }
+    if (!is_file(data_file('products'))) {
+        json_save('products', []);
+    }
+    if (!is_file(data_file('categories'))) {
+        json_save('categories', default_categories());
+    }
+    if (!is_file(data_file('brands'))) {
+        json_save('brands', default_brands());
+    }
+    if (!is_file(data_file('settings'))) {
+        json_save('settings', default_settings());
+    }
+}
+
+function default_settings(): array
+{
+    return [
+        'site_title'  => 'Araç Yedek Parça',
+        'slogan'      => 'Tüm marka ve modeller için orijinal ve muadil yedek parça',
+        'phone'       => '',
+        'whatsapp'    => '',
+        'email'       => '',
+        'address'     => '',
+        'about'       => '',
+        'footer_text' => '',
+        'currency'    => '₺',
+    ];
+}
+
+function default_categories(): array
+{
+    $names = [
+        'Motor & Motor Parçaları', 'Fren Sistemi', 'Süspansiyon & Yürüyen Aksam',
+        'Şanzıman & Vites', 'Debriyaj', 'Direksiyon Sistemi', 'Elektrik & Elektronik',
+        'Aydınlatma & Farlar', 'Kaporta & Karoser', 'Cam & Ayna', 'Soğutma Sistemi',
+        'Klima & Isıtma', 'Yakıt Sistemi', 'Egzoz Sistemi', 'Filtreler',
+        'Yağlar & Sıvılar', 'Triger & Kayışlar', 'Rulman & Aks', 'İç Donanım & Aksesuar',
+        'Lastik & Jant', 'Akü & Şarj Sistemi', 'Sensörler', 'Turbo & Emme Sistemi', 'Diğer',
+    ];
+    $out = [];
+    foreach ($names as $n) {
+        $out[] = ['id' => generate_id(), 'name' => $n];
+    }
+    return $out;
+}
+
+function default_brands(): array
+{
+    $list = [
+        'Alfa Romeo' => ['Giulietta', 'Giulia', 'MiTo', 'Stelvio', '147', '156', '159'],
+        'Audi'       => ['A1', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q2', 'Q3', 'Q5', 'Q7', 'Q8', 'TT'],
+        'BMW'        => ['1 Serisi', '2 Serisi', '3 Serisi', '4 Serisi', '5 Serisi', '6 Serisi', '7 Serisi', 'X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'i3', 'i4'],
+        'BYD'        => ['Atto 3', 'Dolphin', 'Seal', 'Han', 'Tang'],
+        'Chery'      => ['Tiggo 4 Pro', 'Tiggo 7 Pro', 'Tiggo 8 Pro', 'Omoda 5', 'Arrizo'],
+        'Chevrolet'  => ['Aveo', 'Cruze', 'Captiva', 'Spark', 'Lacetti', 'Kalos'],
+        'Citroën'    => ['C1', 'C2', 'C3', 'C3 Aircross', 'C4', 'C4 Cactus', 'C5', 'C5 Aircross', 'C-Elysée', 'Berlingo', 'Jumper', 'Jumpy', 'Nemo'],
+        'Cupra'      => ['Formentor', 'Leon', 'Ateca', 'Born'],
+        'Dacia'      => ['Sandero', 'Sandero Stepway', 'Duster', 'Logan', 'Lodgy', 'Dokker', 'Jogger', 'Spring'],
+        'DS'         => ['DS 3', 'DS 4', 'DS 5', 'DS 7'],
+        'Fiat'       => ['Egea', 'Egea Cross', 'Linea', 'Punto', 'Grande Punto', 'Panda', '500', '500L', '500X', 'Doblo', 'Fiorino', 'Ducato', 'Albea', 'Palio', 'Uno', 'Tempra', 'Tipo', 'Marea', 'Brava', 'Bravo', 'Stilo'],
+        'Ford'       => ['Fiesta', 'Focus', 'Mondeo', 'Kuga', 'Puma', 'EcoSport', 'C-Max', 'S-Max', 'Galaxy', 'Ka', 'Mustang', 'Ranger', 'Transit', 'Transit Custom', 'Transit Courier', 'Transit Connect', 'Tourneo Courier', 'Tourneo Custom', 'Escort', 'Sierra', 'Taunus'],
+        'Honda'      => ['Civic', 'Accord', 'City', 'Jazz', 'CR-V', 'HR-V', 'e:Ny1'],
+        'Hyundai'    => ['i10', 'i20', 'i30', 'Elantra', 'Accent', 'Accent Era', 'Accent Blue', 'Getz', 'Bayon', 'Kona', 'Tucson', 'Santa Fe', 'ix35', 'H100', 'Starex', 'Staria'],
+        'Isuzu'      => ['D-Max', 'NPR', 'NLR', 'NKR'],
+        'Iveco'      => ['Daily', 'Eurocargo', 'Stralis'],
+        'Jaguar'     => ['XE', 'XF', 'F-Pace', 'E-Pace'],
+        'Jeep'       => ['Renegade', 'Compass', 'Cherokee', 'Grand Cherokee', 'Wrangler', 'Avenger'],
+        'Kia'        => ['Picanto', 'Rio', 'Ceed', 'Cerato', 'Stonic', 'Sportage', 'Sorento', 'Niro', 'EV6', 'Venga', 'Soul'],
+        'Lada'       => ['Vega', 'Samara', 'Niva', 'Kalina', 'Granta'],
+        'Land Rover' => ['Defender', 'Discovery', 'Discovery Sport', 'Freelander', 'Range Rover', 'Range Rover Evoque', 'Range Rover Sport'],
+        'Lexus'      => ['CT', 'ES', 'IS', 'NX', 'RX', 'UX'],
+        'Mazda'      => ['2', '3', '6', 'CX-3', 'CX-30', 'CX-5', 'MX-5', '323', '626'],
+        'Mercedes-Benz' => ['A Serisi', 'B Serisi', 'C Serisi', 'CLA', 'CLS', 'E Serisi', 'S Serisi', 'GLA', 'GLB', 'GLC', 'GLE', 'GLS', 'Vito', 'Sprinter', 'Citan', 'Atego', 'Axor', 'Actros'],
+        'MG'         => ['ZS', 'HS', 'MG4', 'MG5', 'Marvel R'],
+        'Mini'       => ['Cooper', 'Countryman', 'Clubman', 'One'],
+        'Mitsubishi' => ['Lancer', 'Colt', 'ASX', 'Eclipse Cross', 'Outlander', 'L200', 'Space Star', 'Carisma', 'Canter'],
+        'Nissan'     => ['Micra', 'Note', 'Juke', 'Qashqai', 'X-Trail', 'Navara', 'Primera', 'Almera', 'Sunny', 'Skystar', 'Pathfinder', 'Leaf'],
+        'Opel'       => ['Corsa', 'Astra', 'Insignia', 'Vectra', 'Meriva', 'Zafira', 'Mokka', 'Crossland', 'Grandland', 'Combo', 'Vivaro', 'Movano', 'Kadett', 'Omega', 'Tigra', 'Frontera'],
+        'Peugeot'    => ['106', '107', '108', '206', '207', '208', '2008', '301', '306', '307', '308', '3008', '406', '407', '408', '5008', '508', 'Partner', 'Rifter', 'Expert', 'Boxer', 'Bipper', 'RCZ'],
+        'Porsche'    => ['911', 'Cayenne', 'Macan', 'Panamera', 'Taycan', 'Boxster', 'Cayman'],
+        'Renault'    => ['Clio', 'Symbol', 'Megane', 'Megane E-Tech', 'Fluence', 'Laguna', 'Latitude', 'Talisman', 'Captur', 'Kadjar', 'Austral', 'Koleos', 'Kangoo', 'Express', 'Trafic', 'Master', 'Scenic', 'Espace', 'Twingo', 'Taliant', 'R9', 'R11', 'R12', 'R19', 'R21', 'Toros', 'Zoe'],
+        'Rover'      => ['214', '216', '414', '416', '620', '75'],
+        'Saab'       => ['9-3', '9-5', '900'],
+        'Seat'       => ['Ibiza', 'Leon', 'Toledo', 'Cordoba', 'Altea', 'Arona', 'Ateca', 'Tarraco', 'Alhambra'],
+        'Skoda'      => ['Fabia', 'Octavia', 'Superb', 'Rapid', 'Scala', 'Kamiq', 'Karoq', 'Kodiaq', 'Roomster', 'Yeti', 'Felicia', 'Favorit', 'Enyaq'],
+        'SsangYong'  => ['Tivoli', 'Korando', 'Rexton', 'Musso', 'Actyon', 'Kyron'],
+        'Subaru'     => ['Impreza', 'Forester', 'XV', 'Outback', 'Legacy', 'BRZ'],
+        'Suzuki'     => ['Swift', 'Vitara', 'S-Cross', 'Jimny', 'SX4', 'Baleno', 'Alto', 'Grand Vitara'],
+        'Tesla'      => ['Model 3', 'Model S', 'Model X', 'Model Y'],
+        'Tofaş'      => ['Şahin', 'Doğan', 'Kartal', 'Serçe', 'Murat 124', 'Murat 131'],
+        'Togg'       => ['T10X', 'T10F'],
+        'Toyota'     => ['Corolla', 'Corolla Cross', 'Yaris', 'Yaris Cross', 'Auris', 'Avensis', 'C-HR', 'RAV4', 'Camry', 'Hilux', 'Land Cruiser', 'Proace', 'Proace City', 'Aygo', 'Verso', 'Carina', 'Starlet', 'Prius'],
+        'Volkswagen' => ['Polo', 'Golf', 'Jetta', 'Bora', 'Passat', 'Passat Variant', 'Arteon', 'T-Cross', 'T-Roc', 'Taigo', 'Tiguan', 'Touareg', 'Touran', 'Sharan', 'Caddy', 'Transporter', 'Caravelle', 'Crafter', 'Amarok', 'Beetle', 'Scirocco', 'Vento', 'ID.3', 'ID.4'],
+        'Volvo'      => ['S40', 'S60', 'S80', 'S90', 'V40', 'V60', 'V90', 'XC40', 'XC60', 'XC90', 'FH', 'FM'],
+    ];
+
+    $out = [];
+    foreach ($list as $brand => $models) {
+        $m = [];
+        foreach ($models as $model) {
+            $m[] = ['id' => generate_id(), 'name' => $model];
+        }
+        $out[] = ['id' => generate_id(), 'name' => $brand, 'models' => $m];
+    }
+    return $out;
+}
+
+/* =========================================================
+ *  Ayarlar / Kategoriler / Markalar / Ürünler
+ * ========================================================= */
+
+function get_settings(): array
+{
+    return array_merge(default_settings(), json_load('settings'));
+}
+
+function get_categories(): array
+{
+    $cats = json_load('categories');
+    usort($cats, fn($a, $b) => strcoll_tr($a['name'], $b['name']));
+    return $cats;
+}
+
+function get_brands(): array
+{
+    $brands = json_load('brands');
+    usort($brands, fn($a, $b) => strcoll_tr($a['name'], $b['name']));
+    return $brands;
+}
+
+function get_products(): array
+{
+    return json_load('products');
+}
+
+function find_by_id(array $items, ?string $id): ?array
+{
+    if ($id === null || $id === '') {
+        return null;
+    }
+    foreach ($items as $item) {
+        if (($item['id'] ?? null) === $id) {
+            return $item;
+        }
+    }
+    return null;
+}
+
+function find_brand_model(array $brands, ?string $brandId, ?string $modelId): array
+{
+    $brand = find_by_id($brands, $brandId);
+    $model = $brand ? find_by_id($brand['models'] ?? [], $modelId) : null;
+    return [$brand, $model];
+}
+
+function strcoll_tr(string $a, string $b): int
+{
+    // Türkçe karakterleri de kabul edilebilir sıralayan basit karşılaştırma
+    $map = ['ç' => 'cz', 'Ç' => 'cz', 'ğ' => 'gz', 'Ğ' => 'gz', 'ı' => 'iy', 'İ' => 'i',
+            'ö' => 'oz', 'Ö' => 'oz', 'ş' => 'sz', 'Ş' => 'sz', 'ü' => 'uz', 'Ü' => 'uz'];
+    $ka = mb_strtolower(strtr($a, $map));
+    $kb = mb_strtolower(strtr($b, $map));
+    return strcmp($ka, $kb);
+}
+
+/* =========================================================
+ *  Kullanıcılar & Kimlik Doğrulama
+ * ========================================================= */
+
+function get_users(): array
+{
+    return json_load('users');
+}
+
+function setup_completed(): bool
+{
+    return count(get_users()) > 0;
+}
+
+function find_user_by_username(string $username): ?array
+{
+    foreach (get_users() as $u) {
+        if (mb_strtolower($u['username']) === mb_strtolower($username)) {
+            return $u;
+        }
+    }
+    return null;
+}
+
+function current_user(): ?array
+{
+    $id = $_SESSION['user_id'] ?? null;
+    if (!$id) {
+        return null;
+    }
+    $user = find_by_id(get_users(), (string)$id);
+    if (!$user) {
+        unset($_SESSION['user_id']);
+        return null;
+    }
+    return $user;
+}
+
+function is_admin(?array $user): bool
+{
+    return $user !== null && ($user['role'] ?? '') === 'admin';
+}
+
+function login_user(array $user): void
+{
+    session_regenerate_id(true);
+    $_SESSION['user_id'] = $user['id'];
+    unset($_SESSION['login_attempts'], $_SESSION['login_blocked_until']);
+}
+
+function logout_user(): void
+{
+    $_SESSION = [];
+    if (ini_get('session.use_cookies')) {
+        $p = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
+    }
+    session_destroy();
+}
+
+function login_blocked(): int
+{
+    $until = (int)($_SESSION['login_blocked_until'] ?? 0);
+    return $until > time() ? $until - time() : 0;
+}
+
+function register_login_failure(): void
+{
+    $attempts = (int)($_SESSION['login_attempts'] ?? 0) + 1;
+    $_SESSION['login_attempts'] = $attempts;
+    if ($attempts >= 5) {
+        $_SESSION['login_blocked_until'] = time() + 300; // 5 dk bekleme
+        $_SESSION['login_attempts'] = 0;
+    }
+}
+
+/* =========================================================
+ *  CSRF & Flash mesajları
+ * ========================================================= */
+
+function csrf_token(): string
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function csrf_field(): string
+{
+    return '<input type="hidden" name="csrf_token" value="' . e(csrf_token()) . '">';
+}
+
+function csrf_verify(): bool
+{
+    $token = $_POST['csrf_token'] ?? '';
+    return is_string($token) && $token !== '' && hash_equals(csrf_token(), $token);
+}
+
+function flash_set(string $type, string $message): void
+{
+    $_SESSION['flash'][] = ['type' => $type, 'message' => $message];
+}
+
+function flash_get(): array
+{
+    $flash = $_SESSION['flash'] ?? [];
+    unset($_SESSION['flash']);
+    return $flash;
+}
+
+/* =========================================================
+ *  Yardımcılar
+ * ========================================================= */
+
+function e(?string $value): string
+{
+    return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+function redirect(string $url): never
+{
+    header('Location: ' . $url);
+    exit;
+}
+
+function format_price($price, string $currency = '₺'): string
+{
+    $price = (float)$price;
+    if ($price <= 0) {
+        return 'Fiyat Sorunuz';
+    }
+    return number_format($price, 2, ',', '.') . ' ' . $currency;
+}
+
+function parse_price(string $raw): float
+{
+    $raw = trim($raw);
+    if ($raw === '') {
+        return 0.0;
+    }
+    // "1.250,50" ve "1250.50" biçimlerinin ikisini de kabul et
+    if (str_contains($raw, ',')) {
+        $raw = str_replace('.', '', $raw);
+        $raw = str_replace(',', '.', $raw);
+    }
+    return max(0.0, (float)$raw);
+}
+
+/* =========================================================
+ *  Görsel yükleme
+ * ========================================================= */
+
+function allowed_image_extensions(): array
+{
+    return ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+}
+
+/**
+ * $_FILES['images'] biçimindeki çoklu dosya girdisini işler,
+ * kaydedilen dosya adlarının listesini döndürür.
+ */
+function handle_image_uploads(array $files, int $limit, array &$errors): array
+{
+    $saved = [];
+    if (empty($files['name']) || !is_array($files['name'])) {
+        return $saved;
+    }
+
+    $count = count($files['name']);
+    for ($i = 0; $i < $count; $i++) {
+        if (count($saved) >= $limit) {
+            $errors[] = 'En fazla ' . MAX_IMAGES_PER_PRODUCT . ' görsel yüklenebilir; fazlası atlandı.';
+            break;
+        }
+        $error = $files['error'][$i] ?? UPLOAD_ERR_NO_FILE;
+        if ($error === UPLOAD_ERR_NO_FILE) {
+            continue;
+        }
+        $name = (string)$files['name'][$i];
+        if ($error !== UPLOAD_ERR_OK) {
+            $errors[] = '"' . $name . '" yüklenemedi (hata kodu: ' . $error . ').';
+            continue;
+        }
+        $tmp  = (string)$files['tmp_name'][$i];
+        $size = (int)$files['size'][$i];
+
+        if ($size > MAX_IMAGE_SIZE) {
+            $errors[] = '"' . $name . '" 5 MB sınırını aşıyor.';
+            continue;
+        }
+        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        if (!in_array($ext, allowed_image_extensions(), true)) {
+            $errors[] = '"' . $name . '" desteklenmeyen dosya türü. (jpg, jpeg, png, webp, gif)';
+            continue;
+        }
+        $info = @getimagesize($tmp);
+        if ($info === false) {
+            $errors[] = '"' . $name . '" geçerli bir görsel dosyası değil.';
+            continue;
+        }
+
+        $newName = date('Ymd') . '_' . bin2hex(random_bytes(8)) . '.' . ($ext === 'jpeg' ? 'jpg' : $ext);
+        $target  = UPLOAD_PATH . '/' . $newName;
+        if (is_uploaded_file($tmp) ? move_uploaded_file($tmp, $target) : rename($tmp, $target)) {
+            $saved[] = $newName;
+        } else {
+            $errors[] = '"' . $name . '" sunucuya kaydedilemedi.';
+        }
+    }
+    return $saved;
+}
+
+function delete_image_file(string $filename): void
+{
+    $filename = basename($filename);
+    if ($filename === '' || $filename === '.htaccess') {
+        return;
+    }
+    $path = UPLOAD_PATH . '/' . $filename;
+    if (is_file($path)) {
+        @unlink($path);
+    }
+}
+
+function product_image_url(array $product): ?string
+{
+    $images = $product['images'] ?? [];
+    if (empty($images)) {
+        return null;
+    }
+    return UPLOAD_URL . '/' . rawurlencode($images[0]);
+}
