@@ -15,6 +15,7 @@
             <ul>
                 <li><a href="index.php">Anasayfa</a></li>
                 <li><a href="index.php#urunler">Ürünler</a></li>
+                <?php if (count(get_bank_accounts($settings)) > 0): ?><li><a href="odeme.php">Ödeme Bilgileri</a></li><?php endif; ?>
                 <li><a href="iletisim.php">İletişim</a></li>
             </ul>
         </div>

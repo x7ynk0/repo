@@ -1,5 +1,53 @@
 /* Vitrin etkileşimleri */
 document.addEventListener('DOMContentLoaded', function () {
+    /* Mobil menü */
+    var navToggle = document.querySelector('.nav-toggle');
+    var siteNav = document.getElementById('site-nav');
+    if (navToggle && siteNav) {
+        navToggle.addEventListener('click', function () {
+            var open = siteNav.classList.toggle('open');
+            navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        document.addEventListener('click', function (e) {
+            if (siteNav.classList.contains('open') && !siteNav.contains(e.target) && !navToggle.contains(e.target)) {
+                siteNav.classList.remove('open');
+                navToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    /* IBAN kopyalama */
+    document.querySelectorAll('.btn-copy[data-copy]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var text = btn.getAttribute('data-copy');
+            var done = function () {
+                var old = btn.textContent;
+                btn.textContent = 'Kopyalandı ✓';
+                btn.classList.add('copied');
+                setTimeout(function () {
+                    btn.textContent = old;
+                    btn.classList.remove('copied');
+                }, 2000);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done).catch(function () { fallbackCopy(text, done); });
+            } else {
+                fallbackCopy(text, done);
+            }
+        });
+    });
+
+    function fallbackCopy(text, done) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (err) { /* kopyalama desteklenmiyor */ }
+        document.body.removeChild(ta);
+    }
+
     /* Marka seçimine bağlı model listesi */
     var brandSelect = document.querySelector('select[data-model-target]');
     if (brandSelect && window.BRAND_DATA) {

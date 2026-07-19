@@ -91,6 +91,8 @@ function default_settings(): array
         'about'       => '',
         'footer_text' => '',
         'currency'    => '₺',
+        'logo'        => '',
+        'bank_accounts' => [],
     ];
 }
 
@@ -363,6 +365,36 @@ function format_price($price, string $currency = '₺'): string
         return 'Fiyat Sorunuz';
     }
     return number_format($price, 2, ',', '.') . ' ' . $currency;
+}
+
+function normalize_iban(string $raw): string
+{
+    return strtoupper((string)preg_replace('/\s+/', '', $raw));
+}
+
+function valid_iban(string $iban): bool
+{
+    return (bool)preg_match('/^[A-Z]{2}[0-9]{2}[0-9A-Z]{11,30}$/', $iban);
+}
+
+function format_iban(string $iban): string
+{
+    return trim(chunk_split(normalize_iban($iban), 4, ' '));
+}
+
+function site_logo_url(array $settings): ?string
+{
+    $logo = (string)($settings['logo'] ?? '');
+    if ($logo === '' || !is_file(UPLOAD_PATH . '/' . basename($logo))) {
+        return null;
+    }
+    return UPLOAD_URL . '/' . rawurlencode(basename($logo));
+}
+
+function get_bank_accounts(array $settings): array
+{
+    $accounts = $settings['bank_accounts'] ?? [];
+    return is_array($accounts) ? array_values(array_filter($accounts, fn($a) => is_array($a) && ($a['iban'] ?? '') !== '')) : [];
 }
 
 function parse_price(string $raw): float

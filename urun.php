@@ -10,7 +10,7 @@ if (!$product || !($product['active'] ?? true)) {
     http_response_code(404);
     $pageTitle = 'Ürün Bulunamadı';
     require __DIR__ . '/includes/header.php';
-    echo '<section class="products-section"><div class="container"><div class="empty-state"><h3>Ürün bulunamadı</h3><p>Aradığınız ürün kaldırılmış veya hiç eklenmemiş olabilir.</p><a class="btn btn-primary" href="index.php">Anasayfaya Dön</a></div></div></section>';
+    echo '<section class="products-section"><div class="container"><div class="empty-state"><h3>Ürün bulunamadı</h3><p>Aradığınız ürün yayından kaldırılmış olabilir.</p><a class="btn btn-primary" href="index.php">Anasayfaya Dön</a></div></div></section>';
     require __DIR__ . '/includes/footer.php';
     exit;
 }
@@ -108,6 +108,27 @@ require __DIR__ . '/includes/header.php';
                         <a class="btn btn-whatsapp" href="https://wa.me/<?= e(preg_replace('/\D+/', '', $settings['whatsapp'])) ?>?text=<?= rawurlencode('Merhaba, "' . $product['name'] . '" ürünü hakkında bilgi almak istiyorum.' . (($product['code'] ?? '') !== '' ? ' (Parça Kodu: ' . $product['code'] . ')' : '')) ?>" target="_blank" rel="noopener">WhatsApp ile Sor</a>
                     <?php endif; ?>
                 </div>
+
+                <?php $bankAccounts = get_bank_accounts($settings); ?>
+                <?php if (!empty($bankAccounts)): ?>
+                <div class="payment-box">
+                    <div class="payment-box-head">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path></svg>
+                        <h3>Havale / EFT ile Ödeme</h3>
+                    </div>
+                    <p class="payment-note">Siparişinizi telefon veya WhatsApp üzerinden onayladıktan sonra ödemenizi aşağıdaki hesaba yapabilirsiniz. Açıklama kısmına ad-soyad ve parça bilgisini yazmayı unutmayın.</p>
+                    <?php foreach ($bankAccounts as $acc): ?>
+                        <div class="iban-row">
+                            <div class="iban-meta">
+                                <?php if (($acc['bank'] ?? '') !== ''): ?><span class="iban-bank"><?= e($acc['bank']) ?></span><?php endif; ?>
+                                <span class="iban-holder"><?= e($acc['holder'] ?? '') ?></span>
+                                <span class="iban-number"><?= e(format_iban($acc['iban'])) ?></span>
+                            </div>
+                            <button type="button" class="btn btn-ghost btn-copy" data-copy="<?= e(normalize_iban($acc['iban'])) ?>">Kopyala</button>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

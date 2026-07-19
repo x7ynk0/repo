@@ -449,9 +449,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($new['currency'] === '') {
             $new['currency'] = '₺';
         }
+
+        // Logo kaldırma
+        if (isset($_POST['remove_logo']) && ($new['logo'] ?? '') !== '') {
+            delete_image_file($new['logo']);
+            $new['logo'] = '';
+        }
+
+        // Logo yükleme (tek dosya)
+        if (!empty($_FILES['logo']['name']) && is_string($_FILES['logo']['name'])) {
+            $lf = $_FILES['logo'];
+            if (($lf['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                $ext = strtolower(pathinfo((string)$lf['name'], PATHINFO_EXTENSION));
+                if ((int)$lf['size'] > 2 * 1024 * 1024) {
+                    flash_set('error', 'Logo dosyası 2 MB sınırını aşıyor.');
+                } elseif (!in_array($ext, allowed_image_extensions(), true)) {
+                    flash_set('error', 'Logo için yalnızca jpg, png, webp veya gif yükleyebilirsiniz.');
+                } elseif (@getimagesize((string)$lf['tmp_name']) === false) {
+                    flash_set('error', 'Yüklenen logo geçerli bir görsel dosyası değil.');
+                } else {
+                    $logoName = 'logo_' . bin2hex(random_bytes(6)) . '.' . ($ext === 'jpeg' ? 'jpg' : $ext);
+                    $tmpPath  = (string)$lf['tmp_name'];
+                    $target   = UPLOAD_PATH . '/' . $logoName;
+                    if (is_uploaded_file($tmpPath) ? move_uploaded_file($tmpPath, $target) : rename($tmpPath, $target)) {
+                        if (($new['logo'] ?? '') !== '') {
+                            delete_image_file($new['logo']);
+                        }
+                        $new['logo'] = $logoName;
+                    } else {
+                        flash_set('error', 'Logo sunucuya kaydedilemedi.');
+                    }
+                }
+            } elseif (($lf['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+                flash_set('error', 'Logo yüklenirken bir hata oluştu (kod: ' . (int)$lf['error'] . ').');
+            }
+        }
+
         json_save('settings', $new);
         flash_set('success', 'Site ayarları kaydedildi.');
         redirect('oxit.php?p=ayarlar');
+    }
+
+    /* ---- Banka hesabı (IBAN) yönetimi ---- */
+    if ($action === 'bank_add') {
+        $bank   = trim((string)($_POST['bank'] ?? ''));
+        $holder = trim((string)($_POST['holder'] ?? ''));
+        $iban   = normalize_iban((string)($_POST['iban'] ?? ''));
+
+        if ($holder === '') {
+            flash_set('error', 'Hesap sahibi adı zorunludur.');
+        } elseif (!valid_iban($iban)) {
+            flash_set('error', 'Geçerli bir IBAN girin. (ör. TR00 0000 0000 0000 0000 0000 00)');
+        } else {
+            $new      = get_settings();
+            $accounts = get_bank_accounts($new);
+            foreach ($accounts as $a) {
+                if (normalize_iban($a['iban']) === $iban) {
+                    flash_set('error', 'Bu IBAN zaten kayıtlı.');
+                    redirect('oxit.php?p=odeme-ayarlari');
+                }
+            }
+            $accounts[] = [
+                'id'     => generate_id(),
+                'bank'   => $bank,
+                'holder' => $holder,
+                'iban'   => $iban,
+            ];
+            $new['bank_accounts'] = $accounts;
+            json_save('settings', $new);
+            flash_set('success', 'Banka hesabı eklendi.');
+        }
+        redirect('oxit.php?p=odeme-ayarlari');
+    }
+
+    if ($action === 'bank_delete') {
+        $id  = (string)($_POST['id'] ?? '');
+        $new = get_settings();
+        $accounts = get_bank_accounts($new);
+        $newAccounts = array_values(array_filter($accounts, fn($a) => ($a['id'] ?? '') !== $id));
+        if (count($newAccounts) === count($accounts)) {
+            flash_set('error', 'Silinmek istenen hesap bulunamadı.');
+        } else {
+            $new['bank_accounts'] = $newAccounts;
+            json_save('settings', $new);
+            flash_set('success', 'Banka hesabı silindi.');
+        }
+        redirect('oxit.php?p=odeme-ayarlari');
     }
 
     flash_set('error', 'Bilinmeyen işlem.');
@@ -563,6 +646,7 @@ $pageTitles = [
     'kategoriler'  => 'Kategoriler',
     'markalar'     => 'Marka & Modeller',
     'calisanlar'   => 'Çalışanlar',
+    'odeme-ayarlari' => 'Ödeme Ayarları',
     'ayarlar'      => 'Site Ayarları',
     'profil'       => 'Profilim',
 ];
@@ -587,6 +671,7 @@ admin_head($pageTitles[$page]);
             <?php if (is_admin($user)): ?>
                 <a href="oxit.php?p=calisanlar" class="<?= $page === 'calisanlar' ? 'active' : '' ?>">Çalışanlar</a>
             <?php endif; ?>
+            <a href="oxit.php?p=odeme-ayarlari" class="<?= $page === 'odeme-ayarlari' ? 'active' : '' ?>">Ödeme Ayarları</a>
             <a href="oxit.php?p=ayarlar" class="<?= $page === 'ayarlar' ? 'active' : '' ?>">Site Ayarları</a>
             <a href="oxit.php?p=profil" class="<?= $page === 'profil' ? 'active' : '' ?>">Profilim</a>
         </nav>
@@ -1039,8 +1124,9 @@ elseif ($page === 'calisanlar'):
 <?php
 /* ---------------- Site Ayarları ---------------- */
 elseif ($page === 'ayarlar'):
+    $logoUrl = site_logo_url($settings);
 ?>
-    <form method="post" action="oxit.php" class="card form-card">
+    <form method="post" action="oxit.php" enctype="multipart/form-data" class="card form-card">
         <?= csrf_field() ?>
         <input type="hidden" name="action" value="settings_save">
         <div class="form-grid">
@@ -1081,10 +1167,77 @@ elseif ($page === 'ayarlar'):
                 <input type="text" id="st-footer" name="footer_text" value="<?= e($settings['footer_text']) ?>" placeholder="Boş bırakılırsa otomatik telif metni gösterilir">
             </div>
         </div>
+        <div class="form-section">
+            <h3>Site Logosu</h3>
+            <p class="muted small">jpg, png, webp veya gif; en fazla 2 MB. Şeffaf arka planlı, yatay bir logo önerilir. Logo yüklenmezse site adı metin olarak gösterilir.</p>
+            <?php if ($logoUrl): ?>
+                <div class="logo-current">
+                    <img src="<?= e($logoUrl) ?>" alt="Mevcut logo">
+                    <label class="check danger"><input type="checkbox" name="remove_logo"> <span>Logoyu kaldır</span></label>
+                </div>
+            <?php endif; ?>
+            <input type="file" name="logo" accept=".jpg,.jpeg,.png,.webp,.gif">
+        </div>
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Ayarları Kaydet</button>
         </div>
     </form>
+
+<?php
+/* ---------------- Ödeme Ayarları ---------------- */
+elseif ($page === 'odeme-ayarlari'):
+    $accounts = get_bank_accounts($settings);
+?>
+    <div class="two-col">
+        <div class="card">
+            <div class="card-head"><h2>Banka Hesapları (<?= count($accounts) ?>)</h2></div>
+            <?php if (empty($accounts)): ?>
+                <p class="muted pad">Henüz banka hesabı eklenmemiş. Hesap eklendiğinde sitede "Ödeme" sayfası ve ürün detaylarında Havale/EFT bölümü otomatik olarak görünür.</p>
+            <?php else: ?>
+                <table class="table">
+                    <thead><tr><th>Banka</th><th>Hesap Sahibi</th><th>IBAN</th><th class="ta-right">İşlem</th></tr></thead>
+                    <tbody>
+                    <?php foreach ($accounts as $acc): ?>
+                        <tr>
+                            <td><?= ($acc['bank'] ?? '') !== '' ? e($acc['bank']) : '<span class="muted">—</span>' ?></td>
+                            <td><strong><?= e($acc['holder'] ?? '') ?></strong></td>
+                            <td class="nowrap"><code><?= e(format_iban($acc['iban'])) ?></code></td>
+                            <td class="ta-right">
+                                <form method="post" action="oxit.php" class="inline-form" data-confirm="Bu banka hesabı silinecek. Emin misiniz?">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="action" value="bank_delete">
+                                    <input type="hidden" name="id" value="<?= e($acc['id'] ?? '') ?>">
+                                    <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+            <p class="muted pad small">Eklenen hesaplar sitedeki "Ödeme Bilgileri" sayfasında ve ürün detay sayfalarındaki Havale/EFT bölümünde müşterilere gösterilir.</p>
+        </div>
+        <div class="card">
+            <div class="card-head"><h2>Yeni Banka Hesabı Ekle</h2></div>
+            <form method="post" action="oxit.php" class="pad" autocomplete="off">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" value="bank_add">
+                <div class="form-field">
+                    <label for="bk-bank">Banka Adı</label>
+                    <input type="text" id="bk-bank" name="bank" placeholder="ör. Ziraat Bankası">
+                </div>
+                <div class="form-field" style="margin-top:12px">
+                    <label for="bk-holder">Hesap Sahibi *</label>
+                    <input type="text" id="bk-holder" name="holder" required placeholder="Ad Soyad / Firma Ünvanı">
+                </div>
+                <div class="form-field" style="margin-top:12px">
+                    <label for="bk-iban">IBAN *</label>
+                    <input type="text" id="bk-iban" name="iban" required placeholder="TR00 0000 0000 0000 0000 0000 00" style="text-transform:uppercase">
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:14px">Hesabı Ekle</button>
+            </form>
+        </div>
+    </div>
 
 <?php
 /* ---------------- Profil ---------------- */

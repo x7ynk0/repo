@@ -30,7 +30,7 @@ require __DIR__ . '/includes/header.php';
                     <?php endif; ?>
                 </ul>
                 <?php if ($settings['phone'] === '' && $settings['whatsapp'] === '' && $settings['email'] === '' && $settings['address'] === ''): ?>
-                    <p class="muted">İletişim bilgileri henüz eklenmemiş. Yönetici panelindeki "Site Ayarları" bölümünden ekleyebilirsiniz.</p>
+                    <p class="muted">İletişim kanallarımız kısa süre içinde bu sayfada yayınlanacaktır.</p>
                 <?php endif; ?>
             </div>
 

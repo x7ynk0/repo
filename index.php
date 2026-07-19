@@ -132,8 +132,8 @@ require __DIR__ . '/includes/header.php';
                     <h3>Sonuç bulunamadı</h3>
                     <p>Arama kriterlerinize uygun ürün bulunamadı. Filtreleri değiştirerek tekrar deneyin.</p>
                 <?php else: ?>
-                    <h3>Henüz ürün eklenmemiş</h3>
-                    <p>Ürünler yönetici paneli üzerinden eklendiğinde burada listelenecektir.</p>
+                    <h3>Ürünlerimiz çok yakında burada</h3>
+                    <p>Kataloğumuz güncelleniyor. Aradığınız parça için bizimle iletişime geçebilirsiniz.</p>
                 <?php endif; ?>
             </div>
         <?php else: ?>
