@@ -14,6 +14,7 @@ if (empty($items)) {
 $errors = [];
 $old    = [
     'name'    => '',
+    'tc'      => '',
     'phone'   => '',
     'email'   => '',
     'address' => '',
@@ -35,8 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (mb_strlen($old['name']) < 3) {
         $errors[] = 'Ad Soyad alanı zorunludur.';
     }
-    if (mb_strlen(preg_replace('/\D+/', '', $old['phone'])) < 10) {
-        $errors[] = 'Geçerli bir telefon numarası girin.';
+    $tcDigits = (string)preg_replace('/\D+/', '', $old['tc']);
+    if (!valid_tckn($tcDigits)) {
+        $errors[] = 'Geçerli bir T.C. Kimlik Numarası girin. (11 haneli, doğrulama algoritmasından geçen bir numara olmalıdır)';
+    }
+    $phoneDigits = normalize_phone_tr($old['phone']);
+    if ($phoneDigits === null) {
+        $errors[] = "Geçerli bir Türkiye telefon numarası girin. (ör. 05xx xxx xx xx veya 0212 xxx xx xx)";
     }
     if ($old['email'] !== '' && !filter_var($old['email'], FILTER_VALIDATE_EMAIL)) {
         $errors[] = 'Geçerli bir e-posta adresi girin.';
@@ -71,7 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'token'          => bin2hex(random_bytes(16)),
             'customer'       => [
                 'name'    => $old['name'],
-                'phone'   => $old['phone'],
+                'tc'      => $tcDigits,
+                'phone'   => format_phone_tr((string)$phoneDigits),
                 'email'   => $old['email'],
                 'address' => $old['address'],
                 'note'    => $old['note'],
@@ -117,7 +124,6 @@ require __DIR__ . '/includes/header.php';
             <li><span>3</span> Sipariş Onayı</li>
         </ol>
 
-        <?php public_flashes(); ?>
         <?php foreach ($errors as $err): ?>
             <div class="notice notice-error"><?= e($err) ?></div>
         <?php endforeach; ?>
@@ -133,10 +139,16 @@ require __DIR__ . '/includes/header.php';
                             <input type="text" id="co-name" name="name" required value="<?= e($old['name']) ?>" autocomplete="name">
                         </div>
                         <div class="form-field">
-                            <label for="co-phone">Telefon *</label>
-                            <input type="tel" id="co-phone" name="phone" required value="<?= e($old['phone']) ?>" placeholder="05xx xxx xx xx" autocomplete="tel">
+                            <label for="co-tc">T.C. Kimlik No *</label>
+                            <input type="text" id="co-tc" name="tc" required value="<?= e($old['tc']) ?>" inputmode="numeric" minlength="11" maxlength="11" pattern="[1-9][0-9]{10}" placeholder="Fatura için gereklidir" data-validate="tckn">
+                            <small class="field-hint" data-hint-for="co-tc"></small>
                         </div>
-                        <div class="form-field span-2">
+                        <div class="form-field">
+                            <label for="co-phone">Telefon *</label>
+                            <input type="tel" id="co-phone" name="phone" required value="<?= e($old['phone']) ?>" placeholder="05xx xxx xx xx" autocomplete="tel" data-validate="phone-tr">
+                            <small class="field-hint" data-hint-for="co-phone"></small>
+                        </div>
+                        <div class="form-field">
                             <label for="co-email">E-posta</label>
                             <input type="email" id="co-email" name="email" value="<?= e($old['email']) ?>" autocomplete="email">
                         </div>

@@ -105,6 +105,7 @@ require __DIR__ . '/includes/header.php';
                         <?= csrf_field() ?>
                         <input type="hidden" name="action" value="add">
                         <input type="hidden" name="id" value="<?= e($product['id']) ?>">
+                        <input type="hidden" name="return" value="urun.php?id=<?= e($product['id']) ?>">
                         <div class="qty-field">
                             <label for="buy-qty">Adet</label>
                             <input class="qty-input" type="number" id="buy-qty" name="qty" value="1" min="1" max="<?= $stock !== '' ? (int)$stock : 99 ?>">

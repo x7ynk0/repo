@@ -972,6 +972,9 @@ elseif ($page === 'siparis-detay'):
                 <h3 class="order-sub">Müşteri Bilgileri</h3>
                 <table class="table plain">
                     <tr><th>Ad Soyad</th><td><?= e($order['customer']['name'] ?? '') ?></td></tr>
+                    <?php if (($order['customer']['tc'] ?? '') !== ''): ?>
+                        <tr><th>T.C. Kimlik No</th><td><code><?= e($order['customer']['tc']) ?></code></td></tr>
+                    <?php endif; ?>
                     <tr><th>Telefon</th><td><a href="tel:<?= e(preg_replace('/\D+/', '', $order['customer']['phone'] ?? '')) ?>"><?= e($order['customer']['phone'] ?? '') ?></a></td></tr>
                     <?php if (($order['customer']['email'] ?? '') !== ''): ?>
                         <tr><th>E-posta</th><td><a href="mailto:<?= e($order['customer']['email']) ?>"><?= e($order['customer']['email']) ?></a></td></tr>

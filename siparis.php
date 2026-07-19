@@ -133,6 +133,7 @@ require __DIR__ . '/includes/header.php';
                     <h4>Teslimat Bilgileri</h4>
                     <p>
                         <strong><?= e($order['customer']['name'] ?? '') ?></strong><br>
+                        <?php if (($order['customer']['tc'] ?? '') !== ''): ?>T.C. No: <?= e(mask_tckn($order['customer']['tc'])) ?><br><?php endif; ?>
                         <?= e($order['customer']['phone'] ?? '') ?><br>
                         <?php if (($order['customer']['email'] ?? '') !== ''): ?><?= e($order['customer']['email']) ?><br><?php endif; ?>
                         <?= nl2br(e($order['customer']['address'] ?? '')) ?>

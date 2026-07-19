@@ -54,4 +54,5 @@ $cartCount  = cart_count();
         </div>
     </div>
 </header>
+<?php public_flashes(); ?>
 <main>

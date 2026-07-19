@@ -13,6 +13,11 @@ Veritabanı gerektirmeyen (JSON dosya tabanlı), yönetici panelli, profesyonel 
 - Sepet: adet güncelleme, ürün çıkarma, stok sınırı kontrolü, sipariş özeti
 - Ödeme adımı: teslimat bilgileri formu + ödeme yöntemi seçimi (Havale/EFT;
   yapı ileride kredi kartı gibi yeni yöntemler eklenebilecek şekilde tasarlandı)
+- Fatura için zorunlu T.C. Kimlik No alanı (resmi kontrol algoritmasıyla
+  doğrulanır) ve Türkiye telefon numarası doğrulaması (GSM/sabit hat/850);
+  her iki alan için canlı (yazarken) doğrulama geri bildirimi
+- Sepete ekleme müşteriyi sayfadan koparmaz: bulunduğu sayfada kalır,
+  üstte "Sepete Git" bağlantılı bildirim gösterilir
 - Siparişler "Ödeme Bekleniyor" durumunda açılır; ödeme doğrulanmadan
   onaylanmaz. Müşteri, ödeme koşullarını onaylamadan siparişi tamamlayamaz
 - Sipariş onay sayfası: sipariş numarası, IBAN ödeme talimatları, tek tıkla

@@ -156,30 +156,39 @@ a { color: inherit; text-decoration: none; }
 .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* ---------- Hero ---------- */
+/* ---------- Hero + arama kartı ---------- */
 .hero {
-    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 55%, #24507f 100%);
+    background:
+        radial-gradient(ellipse at 80% -20%, rgba(240, 99, 42, .18), transparent 55%),
+        linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 60%, #24507f 100%);
     color: #fff;
-    padding: 44px 0 50px;
-    text-align: center;
+    padding: 46px 0 30px;
 }
-.hero h1 { font-size: clamp(1.45rem, 3.6vw, 2.2rem); margin-bottom: 8px; letter-spacing: .2px; }
-.hero p { font-size: clamp(.88rem, 1.8vw, 1.05rem); opacity: .8; max-width: 620px; margin: 0 auto; }
+.hero-text { text-align: center; margin-bottom: 26px; }
+.hero h1 { font-size: clamp(1.4rem, 3.4vw, 2.1rem); margin-bottom: 8px; letter-spacing: .2px; }
+.hero p { font-size: clamp(.88rem, 1.8vw, 1.02rem); opacity: .78; max-width: 620px; margin: 0 auto; }
 
-/* ---------- Filtre çubuğu ---------- */
-.filter-bar {
+.search-card {
     background: var(--surface);
-    border-bottom: 1px solid var(--line);
-    padding: 20px 0;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(6, 16, 30, .28);
+    padding: 18px 20px;
+    margin-bottom: -58px;
+    position: relative;
+    z-index: 2;
 }
-.filter-form {
+.search-row {
     display: flex;
     gap: 12px;
     align-items: flex-end;
     flex-wrap: wrap;
 }
-.filter-field { display: flex; flex-direction: column; gap: 5px; min-width: 150px; }
-.filter-field.grow { flex: 1 1 240px; }
+
+/* Arama kartından sonra gelen bölümlere kartın taşma payı kadar boşluk */
+.features-strip { padding-top: 78px; }
+
+.filter-field { display: flex; flex-direction: column; gap: 5px; min-width: 140px; flex: 1 1 140px; }
+.filter-field.grow { flex: 2 1 220px; }
 .filter-field label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-soft); }
 .filter-field input,
 .filter-field select {
@@ -192,7 +201,84 @@ a { color: inherit; text-decoration: none; }
 }
 .filter-field input:focus,
 .filter-field select:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
-.filter-actions { display: flex; gap: 8px; }
+.filter-actions { display: flex; gap: 8px; flex: 0 0 auto; }
+
+/* ---------- Özellik şeridi ---------- */
+.features-strip {
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 18px;
+}
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 6px;
+}
+.feature-item svg { color: var(--accent); flex-shrink: 0; }
+.feature-item strong { display: block; font-size: .88rem; }
+.feature-item span { display: block; font-size: .74rem; color: var(--ink-soft); margin-top: 1px; }
+
+/* ---------- Bildirimler (toast) ---------- */
+.toast-stack {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: min(440px, calc(100vw - 28px));
+}
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: .88rem;
+    font-weight: 500;
+    box-shadow: 0 10px 30px rgba(6, 16, 30, .22);
+    animation: toast-in .25s ease;
+    background: #fff;
+    border: 1px solid var(--line);
+}
+.toast span { flex: 1; }
+.toast-success { border-left: 4px solid var(--success); }
+.toast-error { border-left: 4px solid var(--danger); }
+.toast-link {
+    flex-shrink: 0;
+    font-weight: 700;
+    color: var(--accent-dark);
+    text-decoration: underline;
+    font-size: .84rem;
+}
+.toast-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    font-size: 1.15rem;
+    line-height: 1;
+    color: var(--ink-soft);
+    cursor: pointer;
+    padding: 2px 4px;
+}
+.toast-hide { opacity: 0; transform: translateY(-6px); transition: opacity .3s, transform .3s; }
+@keyframes toast-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Form alan ipuçları ---------- */
+.field-hint { font-size: .74rem; min-height: 1em; }
+.hint-ok { color: var(--success); }
+.hint-error { color: var(--danger); }
 
 /* ---------- Butonlar ---------- */
 .btn {
@@ -218,6 +304,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- Ürün listesi ---------- */
 .products-section { padding: 36px 0 60px; }
+.featured-section { padding-bottom: 0; }
 .section-head {
     display: flex;
     align-items: baseline;
@@ -858,8 +945,14 @@ a { color: inherit; text-decoration: none; }
     .main-nav a { padding: 12px 14px; font-size: .95rem; }
     .main-nav .phone-btn { margin: 8px 0 0; justify-content: center; }
 
-    .hero { padding: 30px 0 34px; }
+    .hero { padding: 26px 0 24px; }
+    .hero-text { margin-bottom: 18px; }
+    .search-card { padding: 14px; margin-bottom: -40px; }
+    .features-strip { padding-top: 56px; }
+    .features-grid { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+    .feature-item { padding: 8px 4px; }
     .products-section { padding: 24px 0 44px; }
+    .featured-section { padding-bottom: 0; }
 
     /* Sepet ve ödeme tek sütuna iner */
     .cart-layout, .checkout-layout { grid-template-columns: 1fr; }
@@ -891,10 +984,15 @@ a { color: inherit; text-decoration: none; }
     .qty-input { width: 64px; padding: 8px 6px; }
 }
 @media (max-width: 560px) {
-    .filter-form { flex-direction: column; align-items: stretch; }
-    .filter-field { min-width: 0; }
+    .search-row { flex-direction: column; align-items: stretch; }
+    .filter-field { min-width: 0; flex: 0 0 auto; }
     .filter-field.grow { flex: 0 0 auto; }
+    .filter-actions { display: flex; }
     .filter-actions .btn { flex: 1; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .feature-item span { display: none; }
+    .feature-item strong { font-size: .8rem; }
+    .feature-item svg { width: 20px; height: 20px; }
     .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
     .product-body { padding: 10px 12px 12px; }
     .product-body h3 { font-size: .88rem; }

@@ -504,9 +504,9 @@ function csrf_verify(): bool
     return is_string($token) && $token !== '' && hash_equals(csrf_token(), $token);
 }
 
-function flash_set(string $type, string $message): void
+function flash_set(string $type, string $message, ?string $link = null, ?string $linkText = null): void
 {
-    $_SESSION['flash'][] = ['type' => $type, 'message' => $message];
+    $_SESSION['flash'][] = ['type' => $type, 'message' => $message, 'link' => $link, 'link_text' => $linkText];
 }
 
 function flash_get(): array
@@ -516,13 +516,23 @@ function flash_get(): array
     return $flash;
 }
 
-/** Vitrin sayfalarında bilgi/hata mesajlarını basar. */
+/** Vitrin sayfalarında bilgi/hata mesajlarını üstte kayan bildirim olarak basar. */
 function public_flashes(): void
 {
-    foreach (flash_get() as $f) {
-        $cls = $f['type'] === 'success' ? 'notice notice-success' : 'notice notice-error';
-        echo '<div class="' . $cls . '">' . e($f['message']) . '</div>';
+    $flashes = flash_get();
+    if (empty($flashes)) {
+        return;
     }
+    echo '<div class="toast-stack" role="status" aria-live="polite">';
+    foreach ($flashes as $f) {
+        $cls = ($f['type'] ?? '') === 'success' ? 'toast-success' : 'toast-error';
+        echo '<div class="toast ' . $cls . '"><span>' . e($f['message'] ?? '') . '</span>';
+        if (!empty($f['link'])) {
+            echo '<a class="toast-link" href="' . e($f['link']) . '">' . e($f['link_text'] ?? 'Görüntüle') . '</a>';
+        }
+        echo '<button type="button" class="toast-close" aria-label="Kapat">&times;</button></div>';
+    }
+    echo '</div>';
 }
 
 /* =========================================================
@@ -558,6 +568,71 @@ function format_price($price, string $currency = '₺'): string
         return 'Fiyat Sorunuz';
     }
     return number_format($price, 2, ',', '.') . ' ' . $currency;
+}
+
+/**
+ * T.C. Kimlik Numarası doğrulaması (resmi kontrol algoritması):
+ * - 11 hane, ilk hane 0 olamaz
+ * - 10. hane = ((1,3,5,7,9. haneler toplamı × 7) − (2,4,6,8. haneler toplamı)) mod 10
+ * - 11. hane = ilk 10 hanenin toplamı mod 10
+ */
+function valid_tckn(string $tc): bool
+{
+    if (!preg_match('/^[1-9][0-9]{10}$/', $tc)) {
+        return false;
+    }
+    $d = array_map('intval', str_split($tc));
+    $odd  = $d[0] + $d[2] + $d[4] + $d[6] + $d[8];
+    $even = $d[1] + $d[3] + $d[5] + $d[7];
+    $d10  = (($odd * 7) - $even) % 10;
+    if ($d10 < 0) {
+        $d10 += 10;
+    }
+    if ($d10 !== $d[9]) {
+        return false;
+    }
+    return (array_sum(array_slice($d, 0, 10)) % 10) === $d[10];
+}
+
+function mask_tckn(string $tc): string
+{
+    if (strlen($tc) !== 11) {
+        return $tc;
+    }
+    return substr($tc, 0, 2) . '*******' . substr($tc, 9);
+}
+
+/**
+ * Türkiye telefon numarası doğrulaması. +90 / 90 / 0 önekleri ayıklanır;
+ * geriye kalan 10 hane GSM (5xx), sabit hat (2xx/3xx/4xx) veya kurumsal
+ * (850) numara kalıbına uymalıdır. Geçerliyse 10 haneli sade biçim döner.
+ */
+function normalize_phone_tr(string $raw): ?string
+{
+    $digits = (string)preg_replace('/\D+/', '', $raw);
+    if (str_starts_with($digits, '0090')) {
+        $digits = substr($digits, 4);
+    } elseif (str_starts_with($digits, '90') && strlen($digits) === 12) {
+        $digits = substr($digits, 2);
+    }
+    if (str_starts_with($digits, '0')) {
+        $digits = substr($digits, 1);
+    }
+    if (strlen($digits) !== 10) {
+        return null;
+    }
+    if (!preg_match('/^(5[0-9]{9}|[234][0-9]{9}|850[0-9]{7})$/', $digits)) {
+        return null;
+    }
+    return $digits;
+}
+
+function format_phone_tr(string $digits): string
+{
+    if (strlen($digits) !== 10) {
+        return $digits;
+    }
+    return '0' . substr($digits, 0, 3) . ' ' . substr($digits, 3, 3) . ' ' . substr($digits, 6, 2) . ' ' . substr($digits, 8, 2);
 }
 
 function normalize_iban(string $raw): string

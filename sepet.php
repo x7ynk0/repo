@@ -13,24 +13,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cart   = get_cart();
 
     if ($action === 'add') {
+        // Müşteri alışverişe kaldığı yerden devam edebilsin diye
+        // eklendikten sonra geldiği sayfaya geri yönlendirilir.
+        $return = (string)($_POST['return'] ?? '');
+        if (!preg_match('~^[a-zA-Z0-9_\-]+\.php(\?[^\s"\'<>]*)?(#[a-zA-Z0-9_\-]+)?$~', $return)) {
+            $return = 'sepet.php';
+        }
+
         $id  = (string)($_POST['id'] ?? '');
         $qty = max(1, min(99, (int)($_POST['qty'] ?? 1)));
         $p   = find_by_id(get_products(), $id);
         if (!$p || !product_buyable($p)) {
             flash_set('error', 'Bu ürün şu anda satın alınamıyor.');
-            redirect('sepet.php');
+            redirect($return);
         }
         $newQty = ($cart[$id] ?? 0) + $qty;
         $stock  = $p['stock'] ?? '';
         if ($stock !== '' && $newQty > (int)$stock) {
             $newQty = (int)$stock;
-            flash_set('error', 'Stok sınırına ulaşıldı: bu üründen en fazla ' . (int)$stock . ' adet ekleyebilirsiniz.');
+            flash_set('error', 'Stok sınırına ulaşıldı: bu üründen en fazla ' . (int)$stock . ' adet ekleyebilirsiniz.', 'sepet.php', 'Sepete Git');
         } else {
-            flash_set('success', '"' . $p['name'] . '" sepetinize eklendi.');
+            flash_set('success', '"' . $p['name'] . '" sepetinize eklendi.', 'sepet.php', 'Sepete Git');
         }
         $cart[$id] = min(99, $newQty);
         save_cart($cart);
-        redirect('sepet.php');
+        redirect($return);
     }
 
     if ($action === 'update') {
@@ -83,8 +90,6 @@ require __DIR__ . '/includes/header.php';
             <li><span>2</span> Teslimat &amp; Ödeme</li>
             <li><span>3</span> Sipariş Onayı</li>
         </ol>
-
-        <?php public_flashes(); ?>
 
         <?php if (empty($items)): ?>
             <div class="empty-state">
