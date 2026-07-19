@@ -3,8 +3,8 @@
 $settings   = $settings ?? get_settings();
 $pageTitle  = $pageTitle ?? $settings['site_title'];
 $logoUrl    = site_logo_url($settings);
-$hasBank    = count(get_bank_accounts($settings)) > 0;
 $navCurrent = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
+$cartCount  = cart_count();
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -34,9 +34,6 @@ $navCurrent = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
         <nav class="main-nav" id="site-nav">
             <a href="index.php" class="<?= $navCurrent === 'index.php' ? 'active' : '' ?>">Anasayfa</a>
             <a href="index.php#urunler">Ürünler</a>
-            <?php if ($hasBank): ?>
-                <a href="odeme.php" class="<?= $navCurrent === 'odeme.php' ? 'active' : '' ?>">Ödeme</a>
-            <?php endif; ?>
             <a href="iletisim.php" class="<?= $navCurrent === 'iletisim.php' ? 'active' : '' ?>">İletişim</a>
             <?php if ($settings['phone'] !== ''): ?>
                 <a class="phone-btn" href="tel:<?= e(preg_replace('/\s+/', '', $settings['phone'])) ?>">
@@ -46,9 +43,15 @@ $navCurrent = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
             <?php endif; ?>
         </nav>
 
-        <button type="button" class="nav-toggle" aria-label="Menüyü aç/kapat" aria-expanded="false" aria-controls="site-nav">
-            <span></span><span></span><span></span>
-        </button>
+        <div class="header-actions">
+            <a href="sepet.php" class="cart-btn <?= $navCurrent === 'sepet.php' ? 'active' : '' ?>" aria-label="Sepetim<?= $cartCount > 0 ? ' (' . $cartCount . ' ürün)' : '' ?>">
+                <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1.4"></circle><circle cx="19" cy="21" r="1.4"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+                <?php if ($cartCount > 0): ?><span class="cart-badge"><?= $cartCount > 99 ? '99+' : $cartCount ?></span><?php endif; ?>
+            </a>
+            <button type="button" class="nav-toggle" aria-label="Menüyü aç/kapat" aria-expanded="false" aria-controls="site-nav">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
     </div>
 </header>
 <main>

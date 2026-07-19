@@ -143,8 +143,8 @@ require __DIR__ . '/includes/header.php';
                     $pc  = find_by_id($categories, $p['category_id'] ?? null);
                     $img = product_image_url($p);
                 ?>
-                <a class="product-card" href="urun.php?id=<?= e($p['id']) ?>">
-                    <div class="product-thumb">
+                <article class="product-card">
+                    <a class="product-thumb" href="urun.php?id=<?= e($p['id']) ?>">
                         <?php if ($img): ?>
                             <img src="<?= e($img) ?>" alt="<?= e($p['name']) ?>" loading="lazy">
                         <?php else: ?>
@@ -158,17 +158,30 @@ require __DIR__ . '/includes/header.php';
                         <?php elseif (!empty($p['featured'])): ?>
                             <span class="badge badge-accent thumb-badge">Öne Çıkan</span>
                         <?php endif; ?>
-                    </div>
+                    </a>
                     <div class="product-body">
                         <div class="product-tags">
                             <?php if ($pb): ?><span class="tag"><?= e($pb['name'] . ($pm ? ' ' . $pm['name'] : '')) ?></span><?php endif; ?>
                             <?php if ($pc): ?><span class="tag tag-soft"><?= e($pc['name']) ?></span><?php endif; ?>
                         </div>
-                        <h3><?= e($p['name']) ?></h3>
+                        <h3><a href="urun.php?id=<?= e($p['id']) ?>"><?= e($p['name']) ?></a></h3>
                         <?php if (($p['code'] ?? '') !== ''): ?><p class="product-code">Parça Kodu: <?= e($p['code']) ?></p><?php endif; ?>
-                        <div class="product-price"><?= e(format_price($p['price'] ?? 0, $settings['currency'])) ?></div>
+                        <div class="product-foot">
+                            <span class="product-price"><?= e(format_price($p['price'] ?? 0, $settings['currency'])) ?></span>
+                            <?php if (product_buyable($p)): ?>
+                                <form method="post" action="sepet.php">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="action" value="add">
+                                    <input type="hidden" name="id" value="<?= e($p['id']) ?>">
+                                    <input type="hidden" name="qty" value="1">
+                                    <button type="submit" class="btn-add" title="Sepete Ekle" aria-label="<?= e($p['name']) ?> ürününü sepete ekle">
+                                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1.4"></circle><circle cx="19" cy="21" r="1.4"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                </a>
+                </article>
                 <?php endforeach; ?>
             </div>
 

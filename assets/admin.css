@@ -259,6 +259,54 @@ img { max-width: 100%; }
 .badge-success { background: #e2f5eb; color: var(--success); }
 .badge-muted { background: #edf0f4; color: var(--ink-soft); }
 
+/* ---------- Sipariş durumları ---------- */
+.st-yeni { background: #fdeee6; color: var(--accent-dark); }
+.st-onaylandi { background: #e3edfb; color: #1d5cb5; }
+.st-kargoda { background: #ede7fb; color: #6740c4; }
+.st-tamamlandi { background: #e2f5eb; color: var(--success); }
+.st-iptal { background: #edf0f4; color: var(--ink-soft); }
+.status-form { display: inline-block; }
+.status-select {
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    font-size: .78rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+}
+.status-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.status-tabs a {
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-size: .8rem;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+}
+.status-tabs a:hover { border-color: var(--accent); color: var(--accent-dark); }
+.status-tabs a.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+.order-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.order-sub { font-size: .92rem; margin-bottom: 8px; }
+.order-head-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.table.plain th { background: none; text-transform: none; font-size: .84rem; letter-spacing: 0; width: 34%; color: var(--ink-soft); }
+.stat-card.stat-accent { border-color: var(--accent); box-shadow: inset 0 3px 0 var(--accent), var(--shadow); }
+.nav-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    margin-left: 6px;
+    border-radius: 99px;
+    background: var(--accent);
+    color: #fff;
+    font-size: .68rem;
+    font-weight: 700;
+}
+.sidebar-nav a.active .nav-count { background: #fff; color: var(--accent-dark); }
+
 .inline-form { display: inline-block; margin-left: 4px; }
 .inline-search { display: flex; gap: 8px; }
 .inline-search input {
@@ -415,6 +463,7 @@ code {
 /* ---------- Duyarlılık ---------- */
 @media (max-width: 980px) {
     .two-col { grid-template-columns: 1fr; }
+    .order-detail-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 820px) {
     .admin-layout { flex-direction: column; }

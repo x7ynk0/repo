@@ -520,6 +520,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect('oxit.php?p=odeme-ayarlari');
     }
 
+    /* ---- Sipariş yönetimi ---- */
+    if ($action === 'order_status') {
+        $id     = (string)($_POST['id'] ?? '');
+        $status = (string)($_POST['status'] ?? '');
+        if (!isset(order_statuses()[$status])) {
+            flash_set('error', 'Geçersiz sipariş durumu.');
+            redirect('oxit.php?p=siparisler');
+        }
+        $orders = get_orders();
+        $found  = false;
+        foreach ($orders as &$o) {
+            if (($o['id'] ?? '') === $id) {
+                $o['status']     = $status;
+                $o['updated_at'] = date('c');
+                $found = true;
+            }
+        }
+        unset($o);
+        if ($found) {
+            json_save('orders', $orders);
+            flash_set('success', 'Sipariş durumu "' . order_statuses()[$status] . '" olarak güncellendi.');
+        } else {
+            flash_set('error', 'Sipariş bulunamadı.');
+        }
+        $back = (string)($_POST['back'] ?? '');
+        redirect($back === 'detay' ? 'oxit.php?p=siparis-detay&id=' . urlencode($id) : 'oxit.php?p=siparisler');
+    }
+
+    if ($action === 'order_delete') {
+        $id     = (string)($_POST['id'] ?? '');
+        $orders = get_orders();
+        $target = find_by_id($orders, $id);
+        if ($target) {
+            $orders = array_values(array_filter($orders, fn($o) => ($o['id'] ?? '') !== $id));
+            json_save('orders', $orders);
+            flash_set('success', '"' . ($target['no'] ?? '') . '" numaralı sipariş silindi.');
+        } else {
+            flash_set('error', 'Sipariş bulunamadı.');
+        }
+        redirect('oxit.php?p=siparisler');
+    }
+
     if ($action === 'bank_delete') {
         $id  = (string)($_POST['id'] ?? '');
         $new = get_settings();
@@ -638,6 +680,8 @@ if ($page === 'calisanlar' && !is_admin($user)) {
 
 $pageTitles = [
     'panel'        => 'Genel Bakış',
+    'siparisler'   => 'Siparişler',
+    'siparis-detay' => 'Sipariş Detayı',
     'urunler'      => 'Ürünler',
     'urun-ekle'    => 'Yeni Ürün',
     'urun-duzenle' => 'Ürün Düzenle',
@@ -660,8 +704,10 @@ admin_head($pageTitles[$page]);
             <span class="brand-mark">OXIT</span>
             <span class="brand-site"><?= e($settings['site_title']) ?></span>
         </div>
+        <?php $newOrderCount = count(array_filter(get_orders(), fn($o) => ($o['status'] ?? '') === 'yeni')); ?>
         <nav class="sidebar-nav">
             <a href="oxit.php?p=panel" class="<?= $page === 'panel' ? 'active' : '' ?>">Genel Bakış</a>
+            <a href="oxit.php?p=siparisler" class="<?= in_array($page, ['siparisler', 'siparis-detay'], true) ? 'active' : '' ?>">Siparişler<?php if ($newOrderCount > 0): ?> <span class="nav-count"><?= $newOrderCount ?></span><?php endif; ?></a>
             <a href="oxit.php?p=urunler" class="<?= in_array($page, ['urunler', 'urun-duzenle'], true) ? 'active' : '' ?>">Ürünler</a>
             <a href="oxit.php?p=urun-ekle" class="<?= $page === 'urun-ekle' ? 'active' : '' ?>">Yeni Ürün Ekle</a>
             <a href="oxit.php?p=kategoriler" class="<?= $page === 'kategoriler' ? 'active' : '' ?>">Kategoriler</a>
@@ -698,20 +744,51 @@ admin_head($pageTitles[$page]);
 <?php
 /* ---------------- Genel Bakış ---------------- */
 if ($page === 'panel'):
+    $orders        = get_orders();
     $activeCount   = count(array_filter($products, fn($p) => $p['active'] ?? true));
     $noStock       = count(array_filter($products, fn($p) => ($p['stock'] ?? '') !== '' && (int)$p['stock'] <= 0));
-    $modelCount    = array_sum(array_map(fn($b) => count($b['models'] ?? []), $brands));
+    $newOrders     = count(array_filter($orders, fn($o) => ($o['status'] ?? '') === 'yeni'));
     $latest        = $products;
     usort($latest, fn($a, $b) => strcmp((string)($b['created_at'] ?? ''), (string)($a['created_at'] ?? '')));
     $latest = array_slice($latest, 0, 6);
+    $latestOrders = $orders;
+    usort($latestOrders, fn($a, $b) => strcmp((string)($b['created_at'] ?? ''), (string)($a['created_at'] ?? '')));
+    $latestOrders = array_slice($latestOrders, 0, 6);
+    $statuses = order_statuses();
 ?>
     <div class="stat-grid">
+        <div class="stat-card stat-accent"><span class="stat-value"><?= $newOrders ?></span><span class="stat-label">Yeni Sipariş</span></div>
+        <div class="stat-card"><span class="stat-value"><?= count($orders) ?></span><span class="stat-label">Toplam Sipariş</span></div>
         <div class="stat-card"><span class="stat-value"><?= count($products) ?></span><span class="stat-label">Toplam Ürün</span></div>
         <div class="stat-card"><span class="stat-value"><?= $activeCount ?></span><span class="stat-label">Yayında Olan Ürün</span></div>
         <div class="stat-card"><span class="stat-value"><?= $noStock ?></span><span class="stat-label">Stokta Olmayan</span></div>
         <div class="stat-card"><span class="stat-value"><?= count($categories) ?></span><span class="stat-label">Kategori</span></div>
-        <div class="stat-card"><span class="stat-value"><?= count($brands) ?></span><span class="stat-label">Marka</span></div>
-        <div class="stat-card"><span class="stat-value"><?= $modelCount ?></span><span class="stat-label">Model</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-head">
+            <h2>Son Siparişler</h2>
+            <a class="btn btn-ghost btn-sm" href="oxit.php?p=siparisler">Tümünü Gör</a>
+        </div>
+        <?php if (empty($latestOrders)): ?>
+            <p class="muted pad">Henüz sipariş alınmadı. Siparişler geldiğinde burada listelenecek.</p>
+        <?php else: ?>
+            <table class="table">
+                <thead><tr><th>Sipariş No</th><th>Müşteri</th><th>Tutar</th><th>Durum</th><th>Tarih</th><th></th></tr></thead>
+                <tbody>
+                <?php foreach ($latestOrders as $o): ?>
+                    <tr>
+                        <td><strong><?= e($o['no'] ?? '') ?></strong></td>
+                        <td><?= e($o['customer']['name'] ?? '') ?></td>
+                        <td><?= e(format_price($o['total'] ?? 0, $settings['currency'])) ?></td>
+                        <td><span class="badge st-<?= e($o['status'] ?? 'yeni') ?>"><?= e($statuses[$o['status'] ?? 'yeni'] ?? '') ?></span></td>
+                        <td><?= e(date('d.m.Y H:i', strtotime($o['created_at'] ?? 'now'))) ?></td>
+                        <td class="ta-right"><a class="btn btn-ghost btn-sm" href="oxit.php?p=siparis-detay&id=<?= e($o['id'] ?? '') ?>">Detay</a></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
     </div>
 
     <div class="card">
@@ -739,6 +816,153 @@ if ($page === 'panel'):
             </table>
         <?php endif; ?>
     </div>
+
+<?php
+/* ---------------- Siparişler ---------------- */
+elseif ($page === 'siparisler'):
+    $statuses = order_statuses();
+    $orders   = get_orders();
+    usort($orders, fn($a, $b) => strcmp((string)($b['created_at'] ?? ''), (string)($a['created_at'] ?? '')));
+    $filter = (string)($_GET['durum'] ?? '');
+    $counts = array_fill_keys(array_keys($statuses), 0);
+    foreach ($orders as $o) {
+        $st = $o['status'] ?? 'yeni';
+        if (isset($counts[$st])) {
+            $counts[$st]++;
+        }
+    }
+    $list = $filter !== '' ? array_filter($orders, fn($o) => ($o['status'] ?? 'yeni') === $filter) : $orders;
+?>
+    <div class="card">
+        <div class="card-head">
+            <div class="status-tabs">
+                <a href="oxit.php?p=siparisler" class="<?= $filter === '' ? 'active' : '' ?>">Tümü (<?= count($orders) ?>)</a>
+                <?php foreach ($statuses as $key => $label): ?>
+                    <a href="oxit.php?p=siparisler&durum=<?= e($key) ?>" class="<?= $filter === $key ? 'active' : '' ?>"><?= e($label) ?> (<?= $counts[$key] ?>)</a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php if (empty($list)): ?>
+            <p class="muted pad"><?= $filter !== '' ? 'Bu durumda sipariş bulunmuyor.' : 'Henüz sipariş alınmadı.' ?></p>
+        <?php else: ?>
+            <table class="table">
+                <thead><tr><th>Sipariş No</th><th>Müşteri</th><th>Telefon</th><th>Ürün</th><th>Tutar</th><th>Durum</th><th>Tarih</th><th class="ta-right">İşlem</th></tr></thead>
+                <tbody>
+                <?php foreach ($list as $o): ?>
+                    <tr>
+                        <td><strong><?= e($o['no'] ?? '') ?></strong></td>
+                        <td><?= e($o['customer']['name'] ?? '') ?></td>
+                        <td class="nowrap"><?= e($o['customer']['phone'] ?? '') ?></td>
+                        <td><?= array_sum(array_column($o['items'] ?? [], 'qty')) ?> adet</td>
+                        <td><?= e(format_price($o['total'] ?? 0, $settings['currency'])) ?></td>
+                        <td>
+                            <form method="post" action="oxit.php" class="status-form">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="action" value="order_status">
+                                <input type="hidden" name="id" value="<?= e($o['id'] ?? '') ?>">
+                                <select name="status" class="status-select st-<?= e($o['status'] ?? 'yeni') ?>" onchange="this.form.submit()">
+                                    <?php foreach ($statuses as $key => $label): ?>
+                                        <option value="<?= e($key) ?>" <?= ($o['status'] ?? 'yeni') === $key ? 'selected' : '' ?>><?= e($label) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </form>
+                        </td>
+                        <td class="nowrap"><?= e(date('d.m.Y H:i', strtotime($o['created_at'] ?? 'now'))) ?></td>
+                        <td class="ta-right nowrap">
+                            <a class="btn btn-ghost btn-sm" href="oxit.php?p=siparis-detay&id=<?= e($o['id'] ?? '') ?>">Detay</a>
+                            <form method="post" action="oxit.php" class="inline-form" data-confirm='"<?= e($o['no'] ?? '') ?>" numaralı sipariş kalıcı olarak silinecek. Emin misiniz?'>
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="action" value="order_delete">
+                                <input type="hidden" name="id" value="<?= e($o['id'] ?? '') ?>">
+                                <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    </div>
+
+<?php
+/* ---------------- Sipariş Detayı ---------------- */
+elseif ($page === 'siparis-detay'):
+    $statuses = order_statuses();
+    $methods  = payment_methods();
+    $order    = find_by_id(get_orders(), (string)($_GET['id'] ?? ''));
+    if (!$order):
+?>
+    <div class="flash flash-error">Sipariş bulunamadı.</div>
+    <a class="btn btn-ghost" href="oxit.php?p=siparisler">&larr; Sipariş listesine dön</a>
+<?php else: ?>
+    <div class="card">
+        <div class="card-head">
+            <h2>Sipariş <?= e($order['no'] ?? '') ?></h2>
+            <div class="order-head-actions">
+                <form method="post" action="oxit.php" class="status-form">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="action" value="order_status">
+                    <input type="hidden" name="id" value="<?= e($order['id']) ?>">
+                    <input type="hidden" name="back" value="detay">
+                    <select name="status" class="status-select st-<?= e($order['status'] ?? 'yeni') ?>" onchange="this.form.submit()">
+                        <?php foreach ($statuses as $key => $label): ?>
+                            <option value="<?= e($key) ?>" <?= ($order['status'] ?? 'yeni') === $key ? 'selected' : '' ?>><?= e($label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </form>
+                <a class="btn btn-ghost btn-sm" href="oxit.php?p=siparisler">&larr; Listeye Dön</a>
+            </div>
+        </div>
+        <div class="order-detail-grid pad">
+            <div>
+                <h3 class="order-sub">Müşteri Bilgileri</h3>
+                <table class="table plain">
+                    <tr><th>Ad Soyad</th><td><?= e($order['customer']['name'] ?? '') ?></td></tr>
+                    <tr><th>Telefon</th><td><a href="tel:<?= e(preg_replace('/\D+/', '', $order['customer']['phone'] ?? '')) ?>"><?= e($order['customer']['phone'] ?? '') ?></a></td></tr>
+                    <?php if (($order['customer']['email'] ?? '') !== ''): ?>
+                        <tr><th>E-posta</th><td><a href="mailto:<?= e($order['customer']['email']) ?>"><?= e($order['customer']['email']) ?></a></td></tr>
+                    <?php endif; ?>
+                    <tr><th>Adres</th><td><?= nl2br(e($order['customer']['address'] ?? '')) ?></td></tr>
+                    <?php if (($order['customer']['note'] ?? '') !== ''): ?>
+                        <tr><th>Sipariş Notu</th><td><?= nl2br(e($order['customer']['note'])) ?></td></tr>
+                    <?php endif; ?>
+                </table>
+            </div>
+            <div>
+                <h3 class="order-sub">Sipariş Bilgileri</h3>
+                <table class="table plain">
+                    <tr><th>Sipariş No</th><td><strong><?= e($order['no'] ?? '') ?></strong></td></tr>
+                    <tr><th>Tarih</th><td><?= e(date('d.m.Y H:i', strtotime($order['created_at'] ?? 'now'))) ?></td></tr>
+                    <tr><th>Ödeme Yöntemi</th><td><?= e($methods[$order['payment_method'] ?? '']['label'] ?? ($order['payment_method'] ?? '—')) ?></td></tr>
+                    <tr><th>Durum</th><td><span class="badge st-<?= e($order['status'] ?? 'yeni') ?>"><?= e($statuses[$order['status'] ?? 'yeni'] ?? '') ?></span></td></tr>
+                </table>
+            </div>
+        </div>
+        <table class="table">
+            <thead><tr><th>Ürün</th><th>Parça Kodu</th><th>Birim Fiyat</th><th>Adet</th><th class="ta-right">Tutar</th></tr></thead>
+            <tbody>
+            <?php foreach ($order['items'] ?? [] as $item): ?>
+                <tr>
+                    <td>
+                        <?php if (find_by_id($products, $item['product_id'] ?? '')): ?>
+                            <a href="oxit.php?p=urun-duzenle&id=<?= e($item['product_id']) ?>"><strong><?= e($item['name'] ?? '') ?></strong></a>
+                        <?php else: ?>
+                            <strong><?= e($item['name'] ?? '') ?></strong>
+                        <?php endif; ?>
+                    </td>
+                    <td><?= ($item['code'] ?? '') !== '' ? e($item['code']) : '<span class="muted">—</span>' ?></td>
+                    <td><?= e(format_price($item['price'] ?? 0, $settings['currency'])) ?></td>
+                    <td><?= (int)($item['qty'] ?? 0) ?></td>
+                    <td class="ta-right"><?= e(format_price($item['total'] ?? 0, $settings['currency'])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+            <tfoot>
+                <tr><th colspan="4" class="ta-right">Toplam</th><th class="ta-right"><?= e(format_price($order['total'] ?? 0, $settings['currency'])) ?></th></tr>
+            </tfoot>
+        </table>
+    </div>
+<?php endif; ?>
 
 <?php
 /* ---------------- Ürün Listesi ---------------- */
@@ -1190,7 +1414,7 @@ elseif ($page === 'odeme-ayarlari'):
         <div class="card">
             <div class="card-head"><h2>Banka Hesapları (<?= count($accounts) ?>)</h2></div>
             <?php if (empty($accounts)): ?>
-                <p class="muted pad">Henüz banka hesabı eklenmemiş. Hesap eklendiğinde sitede "Ödeme" sayfası ve ürün detaylarında Havale/EFT bölümü otomatik olarak görünür.</p>
+                <p class="muted pad">Henüz banka hesabı eklenmemiş. Eklediğiniz hesaplar, müşteri Havale/EFT ile sipariş verdiğinde sipariş onay sayfasındaki ödeme talimatlarında gösterilir.</p>
             <?php else: ?>
                 <table class="table">
                     <thead><tr><th>Banka</th><th>Hesap Sahibi</th><th>IBAN</th><th class="ta-right">İşlem</th></tr></thead>
@@ -1213,7 +1437,7 @@ elseif ($page === 'odeme-ayarlari'):
                     </tbody>
                 </table>
             <?php endif; ?>
-            <p class="muted pad small">Eklenen hesaplar sitedeki "Ödeme Bilgileri" sayfasında ve ürün detay sayfalarındaki Havale/EFT bölümünde müşterilere gösterilir.</p>
+            <p class="muted pad small">Eklenen hesaplar, Havale/EFT ile verilen siparişlerin onay sayfasında ödeme talimatı olarak müşteriye gösterilir. Sipariş numarası otomatik olarak ödeme açıklamasına yönlendirilir.</p>
         </div>
         <div class="card">
             <div class="card-head"><h2>Yeni Banka Hesabı Ekle</h2></div>

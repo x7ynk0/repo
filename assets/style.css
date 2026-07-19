@@ -98,6 +98,38 @@ a { color: inherit; text-decoration: none; }
 }
 .main-nav .phone-btn:hover { background: var(--accent-dark); }
 
+/* Sepet düğmesi */
+.header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.cart-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 9px;
+    color: rgba(255, 255, 255, .9);
+    transition: background .15s;
+}
+.cart-btn:hover, .cart-btn.active { background: rgba(255, 255, 255, .12); color: #fff; }
+.cart-badge {
+    position: absolute;
+    top: 3px;
+    right: 1px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 99px;
+    background: var(--accent);
+    color: #fff;
+    font-size: .66rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
 /* Hamburger */
 .nav-toggle {
     display: none;
@@ -238,8 +270,33 @@ a { color: inherit; text-decoration: none; }
 }
 .tag-soft { background: #e8eef6; color: var(--brand-2); }
 .product-body h3 { font-size: 1rem; line-height: 1.35; }
+.product-body h3 a:hover { color: var(--accent-dark); }
 .product-code { font-size: .78rem; color: var(--ink-soft); }
-.product-price { margin-top: auto; padding-top: 6px; font-size: 1.1rem; font-weight: 700; color: var(--accent-dark); }
+.product-foot {
+    margin-top: auto;
+    padding-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.product-price { font-size: 1.08rem; font-weight: 700; color: var(--accent-dark); }
+.btn-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 9px;
+    background: var(--brand);
+    color: #fff;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+    flex-shrink: 0;
+}
+.btn-add:hover { background: var(--accent); }
+.btn-add:active { transform: scale(.94); }
 
 .badge {
     display: inline-block;
@@ -379,29 +436,268 @@ a { color: inherit; text-decoration: none; }
     text-align: center;
 }
 
-/* ---------- Ödeme / IBAN ---------- */
-.payment-box {
-    margin-top: 24px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 18px;
-    background: #f8fafc;
+/* ---------- Bildirimler ---------- */
+.notice {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    font-size: .9rem;
+    font-weight: 500;
 }
-.payment-page-card {
+.notice-success { background: #e2f5eb; color: #0e6a3c; border: 1px solid #bfe8d2; }
+.notice-error { background: #fbe4e6; color: #a02531; border: 1px solid #f3c3c8; }
+
+/* ---------- Satın alma kutusu (ürün detay) ---------- */
+.buy-box {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+}
+.qty-field { display: flex; flex-direction: column; gap: 5px; }
+.qty-field label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-soft); }
+.qty-input {
+    width: 76px;
+    padding: 10px 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: .95rem;
+    text-align: center;
+    font-family: inherit;
+}
+.qty-input:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+.btn-lg { padding: 12px 26px; font-size: 1rem; }
+.btn-disabled { background: #e6eaf0; color: #9aa7b6; cursor: not-allowed; }
+
+/* ---------- Sipariş adımları ---------- */
+.checkout-steps {
+    list-style: none;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.checkout-steps li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 99px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+}
+.checkout-steps li span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--line);
+    color: var(--ink-soft);
+    font-size: .74rem;
+    font-weight: 700;
+}
+.checkout-steps li.active { border-color: var(--accent); color: var(--ink); }
+.checkout-steps li.active span { background: var(--accent); color: #fff; }
+.checkout-steps li.done { color: var(--success); border-color: #bfe8d2; }
+.checkout-steps li.done span { background: var(--success); color: #fff; }
+
+/* ---------- Sepet ---------- */
+.cart-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 22px;
+    align-items: start;
+}
+.cart-card {
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 26px;
     box-shadow: var(--shadow);
+    overflow: hidden;
 }
-.payment-box-head {
+.cart-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.cart-table th, .cart-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: middle;
+}
+.cart-table thead th {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--ink-soft);
+    background: #f7f9fc;
+}
+.cart-img-cell { width: 64px; }
+.cart-img-cell img, .cart-noimg {
+    width: 56px;
+    height: 46px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    display: block;
+}
+.cart-noimg { display: flex; align-items: center; justify-content: center; background: #f1f4f8; color: #aab5c2; }
+.cart-name-cell a { font-weight: 600; }
+.cart-name-cell a:hover { color: var(--accent-dark); }
+.cart-name-cell small { display: block; margin-top: 2px; }
+.cart-remove {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+}
+.cart-remove:hover { color: var(--danger); background: #fbe4e6; }
+.cart-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px;
+    flex-wrap: wrap;
+}
+
+/* ---------- Sipariş özeti ---------- */
+.cart-summary {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    position: sticky;
+    top: 76px;
+}
+.cart-summary h3 { font-size: 1.02rem; margin-bottom: 14px; }
+.summary-items { list-style: none; margin-bottom: 12px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.summary-items li {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: .85rem;
+    padding: 4px 0;
+}
+.summary-items em { font-style: normal; color: var(--ink-soft); }
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: .9rem;
+}
+.summary-total {
+    border-top: 1px solid var(--line);
+    margin-top: 8px;
+    padding-top: 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+.summary-total span:last-child { color: var(--accent-dark); }
+.cart-summary .btn-block { margin-top: 12px; width: 100%; }
+.summary-note { font-size: .78rem; color: var(--ink-soft); margin-top: 10px; }
+.back-link { display: inline-block; margin-top: 12px; font-size: .85rem; color: var(--ink-soft); }
+.back-link:hover { color: var(--accent-dark); }
+
+/* ---------- Ödeme (checkout) ---------- */
+.checkout-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 22px;
+    align-items: start;
+}
+.checkout-main { display: flex; flex-direction: column; gap: 20px; }
+.checkout-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px;
+    margin-bottom: 0;
+}
+.checkout-card + .checkout-card { margin-top: 20px; }
+.checkout-card h3 { font-size: 1.05rem; margin-bottom: 14px; }
+.form-grid-public {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.form-grid-public .form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-grid-public .form-field.span-2 { grid-column: span 2; }
+.form-grid-public label { font-size: .78rem; font-weight: 600; color: var(--ink-soft); }
+.form-grid-public input,
+.form-grid-public textarea {
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: .93rem;
+    font-family: inherit;
+}
+.form-grid-public input:focus,
+.form-grid-public textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.form-grid-public textarea { resize: vertical; }
+
+.payment-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+}
+.payment-option + .payment-option { margin-top: 10px; }
+.payment-option:hover { border-color: var(--accent); }
+.payment-option.selected, .payment-option:has(input:checked) { border-color: var(--accent); background: #fdf3ee; }
+.payment-option input { margin-top: 4px; accent-color: var(--accent); }
+.payment-option-body { display: flex; flex-direction: column; gap: 3px; }
+.payment-option-body small { font-size: .8rem; color: var(--ink-soft); }
+
+/* ---------- Sipariş onayı ---------- */
+.order-success {
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 34px 24px;
+    margin-bottom: 20px;
+}
+.order-success-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #e2f5eb;
+    color: var(--success);
     display: flex;
     align-items: center;
-    gap: 9px;
-    margin-bottom: 8px;
-    color: var(--brand);
+    justify-content: center;
+    margin: 0 auto 14px;
 }
-.payment-box-head h3 { font-size: 1.02rem; }
+.order-success h1 { font-size: 1.4rem; margin-bottom: 8px; }
+.order-no { color: var(--accent-dark); letter-spacing: .5px; }
+.order-head-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.badge-status { background: #e8eef6; color: var(--brand-2); }
+.order-table { width: 100%; border-collapse: collapse; font-size: .9rem; margin-bottom: 16px; }
+.order-table th, .order-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+.order-table thead th { font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-soft); }
+.order-table tfoot th { border-bottom: none; font-size: 1rem; }
+.order-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.order-info-grid h4 { font-size: .86rem; margin-bottom: 6px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .5px; }
+.order-info-grid p { font-size: .9rem; }
+.order-footer-actions { display: flex; justify-content: center; margin-top: 20px; }
+.checkout-card .btn-whatsapp { margin-top: 6px; }
+
+/* ---------- Ödeme / IBAN ---------- */
 .payment-note { font-size: .86rem; color: var(--ink-soft); margin-bottom: 14px; }
 .iban-row {
     display: flex;
@@ -465,7 +761,35 @@ a { color: inherit; text-decoration: none; }
 
     .hero { padding: 30px 0 34px; }
     .products-section { padding: 24px 0 44px; }
-    .payment-page-card { padding: 18px; }
+
+    /* Sepet ve ödeme tek sütuna iner */
+    .cart-layout, .checkout-layout { grid-template-columns: 1fr; }
+    .cart-summary { position: static; }
+    .order-info-grid { grid-template-columns: 1fr; }
+    .checkout-card { padding: 16px; }
+
+    /* Sepet tablosu kart görünümüne dönüşür */
+    .cart-table thead { display: none; }
+    .cart-table tr {
+        display: grid;
+        grid-template-columns: 64px 1fr auto;
+        grid-template-areas:
+            "img name remove"
+            "img price price"
+            "img qty total";
+        gap: 4px 10px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+        align-items: center;
+    }
+    .cart-table td { display: block; padding: 0; border: none; }
+    .cart-img-cell { grid-area: img; }
+    .cart-name-cell { grid-area: name; }
+    .cart-remove-cell { grid-area: remove; text-align: right; }
+    .cart-table td[data-label="Birim Fiyat"] { grid-area: price; font-size: .8rem; color: var(--ink-soft); }
+    .cart-table td[data-label="Adet"] { grid-area: qty; }
+    .cart-table td[data-label="Tutar"] { grid-area: total; text-align: right; }
+    .qty-input { width: 64px; padding: 8px 6px; }
 }
 @media (max-width: 560px) {
     .filter-form { flex-direction: column; align-items: stretch; }
@@ -483,4 +807,10 @@ a { color: inherit; text-decoration: none; }
     .detail-contact { flex-direction: column; }
     .detail-contact .btn { width: 100%; }
     .footer-grid { padding: 28px 14px 20px; gap: 20px; }
+    .buy-box .btn-lg { flex: 1; }
+    .form-grid-public { grid-template-columns: 1fr; }
+    .form-grid-public .form-field.span-2 { grid-column: span 1; }
+    .checkout-steps li { padding: 7px 10px; font-size: .76rem; }
+    .cart-actions { flex-direction: column; }
+    .cart-actions .btn { width: 100%; }
 }

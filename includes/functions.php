@@ -68,6 +68,9 @@ function ensure_storage(): void
     if (!is_file(data_file('products'))) {
         json_save('products', []);
     }
+    if (!is_file(data_file('orders'))) {
+        json_save('orders', []);
+    }
     if (!is_file(data_file('categories'))) {
         json_save('categories', default_categories());
     }
@@ -233,6 +236,134 @@ function strcoll_tr(string $a, string $b): int
 }
 
 /* =========================================================
+ *  Sepet
+ * ========================================================= */
+
+function get_cart(): array
+{
+    $cart = $_SESSION['cart'] ?? [];
+    return is_array($cart) ? $cart : [];
+}
+
+function save_cart(array $cart): void
+{
+    $_SESSION['cart'] = $cart;
+}
+
+function cart_count(): int
+{
+    return (int)array_sum(get_cart());
+}
+
+/**
+ * Sepetteki ürünleri güncel ürün verisiyle birleştirir; satıştan
+ * kalkan, pasifleşen veya stoğu tükenen ürünleri sepetten düşürür.
+ */
+function cart_items(): array
+{
+    $products = get_products();
+    $cart     = get_cart();
+    $items    = [];
+    $changed  = false;
+
+    foreach ($cart as $pid => $qty) {
+        $p = find_by_id($products, (string)$pid);
+        if (!$p || !($p['active'] ?? true) || (float)($p['price'] ?? 0) <= 0) {
+            unset($cart[$pid]);
+            $changed = true;
+            continue;
+        }
+        $stock = $p['stock'] ?? '';
+        if ($stock !== '' && (int)$stock <= 0) {
+            unset($cart[$pid]);
+            $changed = true;
+            continue;
+        }
+        $qty = max(1, min(99, (int)$qty));
+        if ($stock !== '') {
+            $qty = min($qty, (int)$stock);
+        }
+        if ($qty !== (int)$cart[$pid]) {
+            $changed = true;
+        }
+        $cart[$pid] = $qty;
+        $items[] = [
+            'product'    => $p,
+            'qty'        => $qty,
+            'line_total' => round((float)$p['price'] * $qty, 2),
+        ];
+    }
+    if ($changed) {
+        save_cart($cart);
+    }
+    return $items;
+}
+
+function cart_total(array $items): float
+{
+    return round((float)array_sum(array_column($items, 'line_total')), 2);
+}
+
+/** Ürün sepete eklenebilir mi? (yayında, fiyatlı ve stokta) */
+function product_buyable(array $p): bool
+{
+    if (!($p['active'] ?? true) || (float)($p['price'] ?? 0) <= 0) {
+        return false;
+    }
+    $stock = $p['stock'] ?? '';
+    return $stock === '' || (int)$stock > 0;
+}
+
+/* =========================================================
+ *  Siparişler
+ * ========================================================= */
+
+function get_orders(): array
+{
+    return json_load('orders');
+}
+
+function order_statuses(): array
+{
+    return [
+        'yeni'       => 'Yeni',
+        'onaylandi'  => 'Onaylandı',
+        'kargoda'    => 'Kargoya Verildi',
+        'tamamlandi' => 'Tamamlandı',
+        'iptal'      => 'İptal Edildi',
+    ];
+}
+
+/**
+ * Aktif ödeme yöntemleri. Yeni bir yöntem (ör. kredi kartı)
+ * eklemek için buraya yeni bir anahtar eklemek yeterlidir.
+ */
+function payment_methods(): array
+{
+    return [
+        'havale' => [
+            'label' => 'Havale / EFT',
+            'note'  => 'Sipariş onayından sonra banka hesap bilgilerimiz görüntülenir. Ödemenizi yaptıktan sonra dekontunuzu iletmeniz yeterlidir.',
+        ],
+    ];
+}
+
+function generate_order_no(): string
+{
+    return 'SP' . date('ymd') . '-' . strtoupper(substr(bin2hex(random_bytes(3)), 0, 5));
+}
+
+function find_order_by_no(string $no): ?array
+{
+    foreach (get_orders() as $o) {
+        if (($o['no'] ?? '') === $no) {
+            return $o;
+        }
+    }
+    return null;
+}
+
+/* =========================================================
  *  Kullanıcılar & Kimlik Doğrulama
  * ========================================================= */
 
@@ -341,6 +472,15 @@ function flash_get(): array
     $flash = $_SESSION['flash'] ?? [];
     unset($_SESSION['flash']);
     return $flash;
+}
+
+/** Vitrin sayfalarında bilgi/hata mesajlarını basar. */
+function public_flashes(): void
+{
+    foreach (flash_get() as $f) {
+        $cls = $f['type'] === 'success' ? 'notice notice-success' : 'notice notice-error';
+        echo '<div class="' . $cls . '">' . e($f['message']) . '</div>';
+    }
 }
 
 /* =========================================================

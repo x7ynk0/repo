@@ -100,35 +100,34 @@ require __DIR__ . '/includes/header.php';
                     </div>
                 <?php endif; ?>
 
+                <?php if (product_buyable($product)): ?>
+                    <form method="post" action="sepet.php" class="buy-box">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="action" value="add">
+                        <input type="hidden" name="id" value="<?= e($product['id']) ?>">
+                        <div class="qty-field">
+                            <label for="buy-qty">Adet</label>
+                            <input class="qty-input" type="number" id="buy-qty" name="qty" value="1" min="1" max="<?= $stock !== '' ? (int)$stock : 99 ?>">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1.4"></circle><circle cx="19" cy="21" r="1.4"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+                            Sepete Ekle
+                        </button>
+                    </form>
+                <?php elseif ($stock !== '' && (int)$stock <= 0): ?>
+                    <div class="buy-box">
+                        <button type="button" class="btn btn-lg btn-disabled" disabled>Stokta Yok</button>
+                    </div>
+                <?php endif; ?>
+
                 <div class="detail-contact">
                     <?php if ($settings['phone'] !== ''): ?>
-                        <a class="btn btn-primary" href="tel:<?= e(preg_replace('/\s+/', '', $settings['phone'])) ?>">Hemen Ara: <?= e($settings['phone']) ?></a>
+                        <a class="btn btn-ghost" href="tel:<?= e(preg_replace('/\s+/', '', $settings['phone'])) ?>">Hemen Ara: <?= e($settings['phone']) ?></a>
                     <?php endif; ?>
                     <?php if ($settings['whatsapp'] !== ''): ?>
                         <a class="btn btn-whatsapp" href="https://wa.me/<?= e(preg_replace('/\D+/', '', $settings['whatsapp'])) ?>?text=<?= rawurlencode('Merhaba, "' . $product['name'] . '" ürünü hakkında bilgi almak istiyorum.' . (($product['code'] ?? '') !== '' ? ' (Parça Kodu: ' . $product['code'] . ')' : '')) ?>" target="_blank" rel="noopener">WhatsApp ile Sor</a>
                     <?php endif; ?>
                 </div>
-
-                <?php $bankAccounts = get_bank_accounts($settings); ?>
-                <?php if (!empty($bankAccounts)): ?>
-                <div class="payment-box">
-                    <div class="payment-box-head">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path></svg>
-                        <h3>Havale / EFT ile Ödeme</h3>
-                    </div>
-                    <p class="payment-note">Siparişinizi telefon veya WhatsApp üzerinden onayladıktan sonra ödemenizi aşağıdaki hesaba yapabilirsiniz. Açıklama kısmına ad-soyad ve parça bilgisini yazmayı unutmayın.</p>
-                    <?php foreach ($bankAccounts as $acc): ?>
-                        <div class="iban-row">
-                            <div class="iban-meta">
-                                <?php if (($acc['bank'] ?? '') !== ''): ?><span class="iban-bank"><?= e($acc['bank']) ?></span><?php endif; ?>
-                                <span class="iban-holder"><?= e($acc['holder'] ?? '') ?></span>
-                                <span class="iban-number"><?= e(format_iban($acc['iban'])) ?></span>
-                            </div>
-                            <button type="button" class="btn btn-ghost btn-copy" data-copy="<?= e(normalize_iban($acc['iban'])) ?>">Kopyala</button>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <?php endif; ?>
             </div>
         </div>
     </div>

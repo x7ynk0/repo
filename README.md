@@ -9,6 +9,13 @@ Veritabanı gerektirmeyen (JSON dosya tabanlı), yönetici panelli, profesyonel 
 - Parça adı / OEM kodu / açıklama içinde arama
 - Marka → model bağımlı filtreleme, kategori filtresi, fiyat/ad sıralama, sayfalama
 - Ürün detay sayfası: çoklu görsel galerisi, teknik bilgiler, stok durumu
+- **Alışveriş akışı:** Sepete ekle → Sepet → Teslimat & Ödeme → Sipariş onayı
+- Sepet: adet güncelleme, ürün çıkarma, stok sınırı kontrolü, sipariş özeti
+- Ödeme adımı: teslimat bilgileri formu + ödeme yöntemi seçimi (Havale/EFT;
+  yapı ileride kredi kartı gibi yeni yöntemler eklenebilecek şekilde tasarlandı)
+- Sipariş onay sayfası: sipariş numarası, IBAN ödeme talimatları, tek tıkla
+  IBAN kopyalama, WhatsApp ile dekont gönderme, sipariş durumu takibi
+- Sipariş verildiğinde stok takibi yapılan ürünlerin stoğu otomatik düşer
 - Telefon ve WhatsApp ile hızlı iletişim butonları (ürün bilgisiyle hazır mesaj)
 - İletişim sayfası (bilgiler panelden yönetilir)
 - Örnek/sahte ürün verisi içermez — ürünler yalnızca panelden eklenir
@@ -16,6 +23,10 @@ Veritabanı gerektirmeyen (JSON dosya tabanlı), yönetici panelli, profesyonel 
 ### Yönetici Paneli (OXIT)
 - **Adres:** `https://siteniz.com/oxit` (Apache'de `.htaccess`, yerelde `router.php` yönlendirir)
 - **İlk kurulum:** Panel ilk açıldığında ana yönetici hesabı oluşturulur. Şifre bcrypt ile şifrelenerek saklanır. Kurulum tamamlandıktan sonra bu ekran bir daha açılmaz, dışarıdan kayıt/profil oluşturulamaz.
+- **Sipariş yönetimi:** gelen siparişleri listeleme, durum filtreleri
+  (Yeni / Onaylandı / Kargoya Verildi / Tamamlandı / İptal), tek tıkla durum
+  güncelleme, sipariş detayı (müşteri + ürün dökümü), sipariş silme; panelde
+  yeni sipariş sayacı
 - Ürün yönetimi: ekleme, düzenleme, silme, yayından kaldırma (pasif), öne çıkarma
 - Ürün başına 8 adede kadar görsel yükleme (jpg/png/webp/gif, 5 MB sınırı), ana görsel seçimi, görsel silme
 - Kategori yönetimi (ekle / yeniden adlandır / sil) — hazır 24 parça kategorisi ile gelir
@@ -43,9 +54,10 @@ Tüm veriler ilk çalıştırmada otomatik oluşturulur:
 data/
 ├── users.json       → kullanıcılar (şifreler bcrypt ile)
 ├── products.json    → ürünler
+├── orders.json      → siparişler
 ├── categories.json  → parça kategorileri
 ├── brands.json      → markalar ve modelleri
-├── settings.json    → site ayarları
+├── settings.json    → site ayarları (banka hesapları dahil)
 └── .htaccess        → dışarıdan erişim engeli
 uploads/             → ürün görselleri (PHP çalıştırma kapalı)
 ```
