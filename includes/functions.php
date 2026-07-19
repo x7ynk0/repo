@@ -80,6 +80,9 @@ function ensure_storage(): void
     if (!is_file(data_file('settings'))) {
         json_save('settings', default_settings());
     }
+    if (!is_file(data_file('faq'))) {
+        json_save('faq', default_faq());
+    }
 }
 
 function default_settings(): array
@@ -91,12 +94,46 @@ function default_settings(): array
         'whatsapp'    => '',
         'email'       => '',
         'address'     => '',
-        'about'       => '',
+        'about'       => default_about_text(),
         'footer_text' => '',
         'currency'    => '₺',
         'logo'        => '',
         'bank_accounts' => [],
     ];
+}
+
+function default_about_text(): string
+{
+    return "Yolculuğumuz, 1998 yılında İstanbul'un arka sokaklarındaki 20 metrekarelik küçük bir dükkânda, tek bir tezgâh ve büyük bir tutkuyla başladı. O günlerde amacımız basitti: aracı arızalanan bir ustanın, bir esnafın ya da yolda kalan bir ailenin aradığı parçayı, doğru fiyata ve en hızlı şekilde bulmak. Aradan geçen çeyrek asırda bu ilke hiç değişmedi; değişen tek şey ölçeğimiz oldu.\n\n"
+        . "Bugün binlerce kalem orijinal ve eş değer yedek parçayı aynı çatı altında buluşturuyor; binek araçlardan hafif ticarilere kadar onlarca markanın yüzlerce modeline hitap eden geniş bir ürün yelpazesi sunuyoruz. Motor aksamından fren sistemlerine, süspansiyondan elektrik ve aydınlatmaya kadar her kategoride, tedarik zincirimizi titizlikle seçtiğimiz üretici ve distribütörlerle kuruyoruz. Raflarımıza giren her parça; kalite denetiminden geçmeden, kutusuna güvenlik etiketi vurulmadan satışa çıkmaz.\n\n"
+        . "Bizi farklı kılan şey yalnızca ürün çeşitliliğimiz değil, parçayı 'bilerek' satmamızdır. Ekibimiz; yılların ustalık tecrübesine sahip, şasi numarasından parça doğrulaması yapabilen, aracınıza uymayan ürünü size hiç göndermeyen uzmanlardan oluşur. Sipariş öncesi uyumluluk kontrolü, sipariş sonrası ise hızlı kargo ve düzenli bilgilendirme standart hizmetimizdir.\n\n"
+        . "Müşterilerimizin bir kısmı bize ilk günden beri gelen sanayi esnafı, bir kısmı ise aracının bakımını kendi yapmayı seven tutkulu sürücüler. Kim olursanız olun ilkemiz aynı: doğru parça, dürüst fiyat, zamanında teslimat. Çünkü biliyoruz ki bir yedek parça sadece bir metal ya da plastik değildir; sizi yola çıkaran güvenin ta kendisidir.\n\n"
+        . "Yarına bakarken hedefimiz; dijital altyapımızı sürekli geliştirerek Türkiye'nin her köşesine aynı gün kargo hizmetini ulaştırmak ve 'aradığınız parça bizde yoksa, sizin için buluruz' sözümüzü her geçen gün daha fazla müşterimize verebilmek. Bize güvenen herkese teşekkür ederiz — iyi yolculuklar dileriz.";
+}
+
+function default_faq(): array
+{
+    $items = [
+        ['Siparişimi nasıl oluşturabilirim?', "Beğendiğiniz ürünü sepetinize ekleyin, ardından sepet sayfasından \"Ödeme Adımına Geç\" düğmesiyle teslimat bilgilerinizi girin. Ödeme yönteminizi seçip siparişi tamamladığınızda size özel bir sipariş numarası oluşturulur."],
+        ['Hangi ödeme yöntemlerini kullanabilirim?', "Şu an için Havale/EFT ile ödeme kabul ediyoruz. Siparişinizi tamamladıktan sonra banka hesap bilgilerimiz ve sipariş numaranız ekranda görüntülenir. Kredi kartı ile ödeme seçeneği için çalışmalarımız devam etmektedir."],
+        ['Havale açıklamasına ne yazmalıyım?', "Ödeme açıklamasına mutlaka sipariş numaranızı yazın. Bazı hesaplarımızda açıklama zorunludur; bu hesaplara açıklamasız veya hatalı açıklamayla gönderilen ödemeler iade edilir ve sipariş işleme alınmaz."],
+        ['Ödememi yaptım, siparişim ne zaman onaylanır?', "Ödemeniz hesabımıza ulaşıp doğrulandığında siparişiniz onaylanır ve hazırlanmaya başlar. Dekontunuzu WhatsApp üzerinden iletirseniz doğrulama süreci hızlanır. Ödemesi doğrulanmayan siparişler onaylanmaz."],
+        ['Siparişim ne zaman kargoya verilir?', "Ödemesi onaylanan siparişler stok durumuna göre en kısa sürede kargoya teslim edilir. Kargo firması ve gönderi ücreti, sipariş onayı sırasında size bildirilir. Siparişinizin durumunu onay sayfanızdaki bağlantıdan takip edebilirsiniz."],
+        ['Parçanın aracıma uyup uymayacağından emin değilim, ne yapmalıyım?', "Sipariş vermeden önce telefon veya WhatsApp üzerinden bize ulaşın; aracınızın marka, model, yıl ve şasi numarası ile parça uyumluluğunu ücretsiz kontrol edelim. Sipariş notu alanına araç bilgilerinizi yazmanız da doğrulama yapmamızı sağlar."],
+        ['Sattığınız parçalar orijinal mi?', "Ürünlerimiz orijinal (OEM) ve kalitesi belgeli eş değer (muadil) parçalardan oluşur. Her ürünün açıklamasında bu bilgi yer alır; emin olamadığınız durumlarda parça kodu ile bize danışabilirsiniz."],
+        ['İade ve değişim koşullarınız nelerdir?', "Kutusu açılmamış ve montaj yapılmamış ürünlerde, teslimattan itibaren 14 gün içinde iade veya değişim talep edebilirsiniz. Elektronik parçalarda iade, parçanın takılmamış olması şartıyla kabul edilir. Süreç için sipariş numaranızla bize ulaşmanız yeterlidir."],
+        ['Fiyatı "Fiyat Sorunuz" görünen ürünleri nasıl satın alabilirim?', "Bu ürünlerin fiyatı tedarik durumuna göre değişkenlik gösterdiği için güncel fiyatı telefon veya WhatsApp üzerinden öğrenebilirsiniz. Talebiniz üzerine ürün, fiyatı güncellenerek sipariş verebileceğiniz duruma getirilir."],
+    ];
+    $out = [];
+    foreach ($items as [$q, $a]) {
+        $out[] = ['id' => generate_id(), 'question' => $q, 'answer' => $a];
+    }
+    return $out;
+}
+
+function get_faq(): array
+{
+    return json_load('faq');
 }
 
 function default_categories(): array
@@ -326,12 +363,17 @@ function get_orders(): array
 function order_statuses(): array
 {
     return [
-        'yeni'       => 'Yeni',
-        'onaylandi'  => 'Onaylandı',
-        'kargoda'    => 'Kargoya Verildi',
-        'tamamlandi' => 'Tamamlandı',
-        'iptal'      => 'İptal Edildi',
+        'odeme-bekliyor' => 'Ödeme Bekleniyor',
+        'onaylandi'      => 'Ödeme Alındı / Onaylandı',
+        'kargoda'        => 'Kargoya Verildi',
+        'tamamlandi'     => 'Tamamlandı',
+        'iptal'          => 'İptal Edildi',
     ];
+}
+
+function order_status_label(?string $status): string
+{
+    return order_statuses()[$status ?? ''] ?? 'Ödeme Bekleniyor';
 }
 
 /**
@@ -343,7 +385,7 @@ function payment_methods(): array
     return [
         'havale' => [
             'label' => 'Havale / EFT',
-            'note'  => 'Sipariş onayından sonra banka hesap bilgilerimiz görüntülenir. Ödemenizi yaptıktan sonra dekontunuzu iletmeniz yeterlidir.',
+            'note'  => 'Siparişi tamamladığınızda banka hesap bilgilerimiz görüntülenir. Siparişiniz, ödemeniz hesabımıza ulaşıp doğrulandıktan sonra onaylanır ve hazırlanmaya başlar.',
         ],
     ];
 }

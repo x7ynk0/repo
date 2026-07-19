@@ -260,6 +260,7 @@ img { max-width: 100%; }
 .badge-muted { background: #edf0f4; color: var(--ink-soft); }
 
 /* ---------- Sipariş durumları ---------- */
+.st-odeme-bekliyor { background: #fff4e0; color: #b46a00; }
 .st-yeni { background: #fdeee6; color: var(--accent-dark); }
 .st-onaylandi { background: #e3edfb; color: #1d5cb5; }
 .st-kargoda { background: #ede7fb; color: #6740c4; }
@@ -430,6 +431,19 @@ img { max-width: 100%; }
     border-radius: 8px;
     border: 1px solid var(--line);
 }
+
+/* ---------- SSS yönetimi ---------- */
+.faq-admin-list { display: flex; flex-direction: column; }
+.faq-admin-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+}
+.faq-admin-item > form:first-child { flex: 1; }
+.faq-admin-item:last-child { border-bottom: none; }
+.faq-admin-actions { margin-top: 8px; }
 
 /* ---------- Logo yönetimi ---------- */
 .logo-current {

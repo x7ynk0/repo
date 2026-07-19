@@ -446,6 +446,92 @@ a { color: inherit; text-decoration: none; }
 }
 .notice-success { background: #e2f5eb; color: #0e6a3c; border: 1px solid #bfe8d2; }
 .notice-error { background: #fbe4e6; color: #a02531; border: 1px solid #f3c3c8; }
+.notice-warning { background: #fff4e0; color: #8a5a00; border: 1px solid #f3ddb0; line-height: 1.6; }
+.badge-warning { background: #fff4e0; color: #b46a00; }
+
+/* ---------- Sayfa girişleri (Hakkımızda, SSS) ---------- */
+.page-hero {
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 60%, #24507f 100%);
+    color: #fff;
+    padding: 36px 0 40px;
+    text-align: center;
+}
+.page-hero h1 { font-size: clamp(1.35rem, 3vw, 1.9rem); margin-bottom: 6px; }
+.page-hero p { font-size: .92rem; opacity: .8; max-width: 560px; margin: 0 auto; }
+
+.content-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 30px 32px;
+}
+.about-content p { margin-bottom: 16px; font-size: .96rem; line-height: 1.75; color: #2a3644; }
+.about-content p:first-of-type::first-letter {
+    font-size: 2.6rem;
+    font-weight: 800;
+    float: left;
+    line-height: 1;
+    padding-right: 10px;
+    color: var(--accent);
+}
+.about-content p:last-child { margin-bottom: 0; }
+.about-cta { display: flex; gap: 10px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+.inline-link { color: var(--accent-dark); font-weight: 600; text-decoration: underline; }
+
+/* ---------- SSS ---------- */
+.faq-list { display: flex; flex-direction: column; gap: 10px; }
+.faq-item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+.faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 18px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: .95rem;
+    list-style: none;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary svg { flex-shrink: 0; color: var(--ink-soft); transition: transform .2s; }
+.faq-item[open] summary { color: var(--accent-dark); }
+.faq-item[open] summary svg { transform: rotate(180deg); }
+.faq-answer { padding: 0 18px 16px; }
+.faq-answer p { font-size: .9rem; line-height: 1.7; color: #33404f; }
+.faq-more {
+    text-align: center;
+    margin-top: 28px;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+}
+.faq-more p { margin-bottom: 12px; color: var(--ink-soft); }
+
+/* ---------- Ödeme koşulu onayı ---------- */
+.terms-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: .84rem;
+    line-height: 1.6;
+    color: #33404f;
+    cursor: pointer;
+}
+.terms-check input { margin-top: 3px; flex-shrink: 0; width: 16px; height: 16px; accent-color: var(--accent); }
+.iban-bank-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
 /* ---------- Satın alma kutusu (ürün detay) ---------- */
 .buy-box {
@@ -690,7 +776,8 @@ a { color: inherit; text-decoration: none; }
 .order-table { width: 100%; border-collapse: collapse; font-size: .9rem; margin-bottom: 16px; }
 .order-table th, .order-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; }
 .order-table thead th { font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-soft); }
-.order-table tfoot th { border-bottom: none; font-size: 1rem; }
+.order-table tfoot th { border-bottom: none; font-size: 1rem; white-space: nowrap; }
+.order-table td:last-child, .order-table th:last-child { white-space: nowrap; }
 .order-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .order-info-grid h4 { font-size: .86rem; margin-bottom: 6px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .5px; }
 .order-info-grid p { font-size: .9rem; }

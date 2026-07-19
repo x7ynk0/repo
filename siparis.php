@@ -39,18 +39,31 @@ require __DIR__ . '/includes/header.php';
             </div>
             <h1>Siparişiniz Alındı</h1>
             <p>Sipariş numaranız: <strong class="order-no"><?= e($order['no']) ?></strong></p>
-            <p class="muted">Bu sayfayı yer imlerinize ekleyerek siparişinizin durumunu takip edebilirsiniz.</p>
+            <?php if (($order['status'] ?? 'odeme-bekliyor') === 'odeme-bekliyor'): ?>
+                <p class="muted">Siparişiniz, ödemeniz hesabımıza ulaşıp doğrulandıktan sonra onaylanacaktır. Bu sayfayı yer imlerinize ekleyerek sipariş durumunuzu takip edebilirsiniz.</p>
+            <?php else: ?>
+                <p class="muted">Bu sayfayı yer imlerinize ekleyerek siparişinizin durumunu takip edebilirsiniz.</p>
+            <?php endif; ?>
         </div>
 
         <?php if ($isHavale): ?>
         <div class="checkout-card">
             <h3>Ödeme Talimatları — <?= e($methodLabel) ?></h3>
             <?php if (!empty($bankAccounts)): ?>
-                <p class="payment-note">Sipariş tutarını aşağıdaki hesaba gönderin. Ödeme açıklamasına <strong>sipariş numaranızı (<?= e($order['no']) ?>)</strong> yazmanız yeterlidir. Ödemeniz onaylandığında siparişiniz hazırlanmaya başlar.</p>
+                <?php $anyDescRequired = (bool)array_filter($bankAccounts, fn($a) => !empty($a['desc_required'])); ?>
+                <p class="payment-note">Sipariş tutarını aşağıdaki hesaba gönderin ve ödeme açıklamasına <strong>sipariş numaranızı (<?= e($order['no']) ?>)</strong> yazın. Ödemeniz hesabımıza ulaşıp doğrulandığında siparişiniz onaylanır ve hazırlanmaya başlar.</p>
+                <?php if ($anyDescRequired): ?>
+                    <div class="notice notice-warning">
+                        <strong>Önemli:</strong> "Açıklama Zorunlu" işaretli hesaplara yapacağınız ödemelerde, açıklama alanına sipariş numaranızı (<strong><?= e($order['no']) ?></strong>) yazmanız <strong>zorunludur</strong>. Açıklaması boş bırakılan veya hatalı yazılan ödemeler <strong>iade edilir</strong> ve siparişiniz işleme alınmaz.
+                    </div>
+                <?php endif; ?>
                 <?php foreach ($bankAccounts as $acc): ?>
                     <div class="iban-row">
                         <div class="iban-meta">
-                            <?php if (($acc['bank'] ?? '') !== ''): ?><span class="iban-bank"><?= e($acc['bank']) ?></span><?php endif; ?>
+                            <span class="iban-bank-line">
+                                <?php if (($acc['bank'] ?? '') !== ''): ?><span class="iban-bank"><?= e($acc['bank']) ?></span><?php endif; ?>
+                                <?php if (!empty($acc['desc_required'])): ?><span class="badge badge-warning">Açıklama Zorunlu</span><?php endif; ?>
+                            </span>
                             <span class="iban-holder"><?= e($acc['holder'] ?? '') ?></span>
                             <span class="iban-number"><?= e(format_iban($acc['iban'])) ?></span>
                         </div>
@@ -69,7 +82,7 @@ require __DIR__ . '/includes/header.php';
         <div class="checkout-card">
             <div class="order-head-row">
                 <h3>Sipariş Detayı</h3>
-                <span class="badge badge-status"><?= e($statuses[$order['status'] ?? 'yeni'] ?? 'Yeni') ?></span>
+                <span class="badge badge-status"><?= e(order_status_label($order['status'] ?? null)) ?></span>
             </div>
             <table class="order-table">
                 <thead><tr><th>Ürün</th><th>Adet</th><th class="ta-right">Tutar</th></tr></thead>

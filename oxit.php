@@ -508,10 +508,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             $accounts[] = [
-                'id'     => generate_id(),
-                'bank'   => $bank,
-                'holder' => $holder,
-                'iban'   => $iban,
+                'id'            => generate_id(),
+                'bank'          => $bank,
+                'holder'        => $holder,
+                'iban'          => $iban,
+                'desc_required' => isset($_POST['desc_required']),
             ];
             $new['bank_accounts'] = $accounts;
             json_save('settings', $new);
@@ -560,6 +561,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash_set('error', 'Sipariş bulunamadı.');
         }
         redirect('oxit.php?p=siparisler');
+    }
+
+    /* ---- SSS yönetimi ---- */
+    if ($action === 'faq_add') {
+        $question = trim((string)($_POST['question'] ?? ''));
+        $answer   = trim((string)($_POST['answer'] ?? ''));
+        if ($question === '' || $answer === '') {
+            flash_set('error', 'Soru ve cevap alanları boş bırakılamaz.');
+        } else {
+            $faq   = get_faq();
+            $faq[] = ['id' => generate_id(), 'question' => $question, 'answer' => $answer];
+            json_save('faq', $faq);
+            flash_set('success', 'Soru eklendi.');
+        }
+        redirect('oxit.php?p=sss');
+    }
+
+    if ($action === 'faq_update') {
+        $id       = (string)($_POST['id'] ?? '');
+        $question = trim((string)($_POST['question'] ?? ''));
+        $answer   = trim((string)($_POST['answer'] ?? ''));
+        if ($question === '' || $answer === '') {
+            flash_set('error', 'Soru ve cevap alanları boş bırakılamaz.');
+        } else {
+            $faq   = get_faq();
+            $found = false;
+            foreach ($faq as &$f) {
+                if (($f['id'] ?? '') === $id) {
+                    $f['question'] = $question;
+                    $f['answer']   = $answer;
+                    $found = true;
+                }
+            }
+            unset($f);
+            if ($found) {
+                json_save('faq', $faq);
+                flash_set('success', 'Soru güncellendi.');
+            } else {
+                flash_set('error', 'Soru bulunamadı.');
+            }
+        }
+        redirect('oxit.php?p=sss');
+    }
+
+    if ($action === 'faq_delete') {
+        $id  = (string)($_POST['id'] ?? '');
+        $faq = array_values(array_filter(get_faq(), fn($f) => ($f['id'] ?? '') !== $id));
+        json_save('faq', $faq);
+        flash_set('success', 'Soru silindi.');
+        redirect('oxit.php?p=sss');
     }
 
     if ($action === 'bank_delete') {
@@ -689,6 +740,7 @@ $pageTitles = [
     'markalar'     => 'Marka & Modeller',
     'calisanlar'   => 'Çalışanlar',
     'odeme-ayarlari' => 'Ödeme Ayarları',
+    'sss'          => 'SSS Yönetimi',
     'ayarlar'      => 'Site Ayarları',
     'profil'       => 'Profilim',
 ];
@@ -704,7 +756,7 @@ admin_head($pageTitles[$page]);
             <span class="brand-mark">OXIT</span>
             <span class="brand-site"><?= e($settings['site_title']) ?></span>
         </div>
-        <?php $newOrderCount = count(array_filter(get_orders(), fn($o) => ($o['status'] ?? '') === 'yeni')); ?>
+        <?php $newOrderCount = count(array_filter(get_orders(), fn($o) => ($o['status'] ?? '') === 'odeme-bekliyor')); ?>
         <nav class="sidebar-nav">
             <a href="oxit.php?p=panel" class="<?= $page === 'panel' ? 'active' : '' ?>">Genel Bakış</a>
             <a href="oxit.php?p=siparisler" class="<?= in_array($page, ['siparisler', 'siparis-detay'], true) ? 'active' : '' ?>">Siparişler<?php if ($newOrderCount > 0): ?> <span class="nav-count"><?= $newOrderCount ?></span><?php endif; ?></a>
@@ -716,6 +768,7 @@ admin_head($pageTitles[$page]);
                 <a href="oxit.php?p=calisanlar" class="<?= $page === 'calisanlar' ? 'active' : '' ?>">Çalışanlar</a>
             <?php endif; ?>
             <a href="oxit.php?p=odeme-ayarlari" class="<?= $page === 'odeme-ayarlari' ? 'active' : '' ?>">Ödeme Ayarları</a>
+            <a href="oxit.php?p=sss" class="<?= $page === 'sss' ? 'active' : '' ?>">SSS Yönetimi</a>
             <a href="oxit.php?p=ayarlar" class="<?= $page === 'ayarlar' ? 'active' : '' ?>">Site Ayarları</a>
             <a href="oxit.php?p=profil" class="<?= $page === 'profil' ? 'active' : '' ?>">Profilim</a>
         </nav>
@@ -747,7 +800,7 @@ if ($page === 'panel'):
     $orders        = get_orders();
     $activeCount   = count(array_filter($products, fn($p) => $p['active'] ?? true));
     $noStock       = count(array_filter($products, fn($p) => ($p['stock'] ?? '') !== '' && (int)$p['stock'] <= 0));
-    $newOrders     = count(array_filter($orders, fn($o) => ($o['status'] ?? '') === 'yeni'));
+    $newOrders     = count(array_filter($orders, fn($o) => ($o['status'] ?? '') === 'odeme-bekliyor'));
     $latest        = $products;
     usort($latest, fn($a, $b) => strcmp((string)($b['created_at'] ?? ''), (string)($a['created_at'] ?? '')));
     $latest = array_slice($latest, 0, 6);
@@ -757,7 +810,7 @@ if ($page === 'panel'):
     $statuses = order_statuses();
 ?>
     <div class="stat-grid">
-        <div class="stat-card stat-accent"><span class="stat-value"><?= $newOrders ?></span><span class="stat-label">Yeni Sipariş</span></div>
+        <div class="stat-card stat-accent"><span class="stat-value"><?= $newOrders ?></span><span class="stat-label">Ödeme Bekleyen Sipariş</span></div>
         <div class="stat-card"><span class="stat-value"><?= count($orders) ?></span><span class="stat-label">Toplam Sipariş</span></div>
         <div class="stat-card"><span class="stat-value"><?= count($products) ?></span><span class="stat-label">Toplam Ürün</span></div>
         <div class="stat-card"><span class="stat-value"><?= $activeCount ?></span><span class="stat-label">Yayında Olan Ürün</span></div>
@@ -781,7 +834,7 @@ if ($page === 'panel'):
                         <td><strong><?= e($o['no'] ?? '') ?></strong></td>
                         <td><?= e($o['customer']['name'] ?? '') ?></td>
                         <td><?= e(format_price($o['total'] ?? 0, $settings['currency'])) ?></td>
-                        <td><span class="badge st-<?= e($o['status'] ?? 'yeni') ?>"><?= e($statuses[$o['status'] ?? 'yeni'] ?? '') ?></span></td>
+                        <td><span class="badge st-<?= e($o['status'] ?? 'odeme-bekliyor') ?>"><?= e($statuses[$o['status'] ?? 'odeme-bekliyor'] ?? '') ?></span></td>
                         <td><?= e(date('d.m.Y H:i', strtotime($o['created_at'] ?? 'now'))) ?></td>
                         <td class="ta-right"><a class="btn btn-ghost btn-sm" href="oxit.php?p=siparis-detay&id=<?= e($o['id'] ?? '') ?>">Detay</a></td>
                     </tr>
@@ -826,12 +879,12 @@ elseif ($page === 'siparisler'):
     $filter = (string)($_GET['durum'] ?? '');
     $counts = array_fill_keys(array_keys($statuses), 0);
     foreach ($orders as $o) {
-        $st = $o['status'] ?? 'yeni';
+        $st = $o['status'] ?? 'odeme-bekliyor';
         if (isset($counts[$st])) {
             $counts[$st]++;
         }
     }
-    $list = $filter !== '' ? array_filter($orders, fn($o) => ($o['status'] ?? 'yeni') === $filter) : $orders;
+    $list = $filter !== '' ? array_filter($orders, fn($o) => ($o['status'] ?? 'odeme-bekliyor') === $filter) : $orders;
 ?>
     <div class="card">
         <div class="card-head">
@@ -860,9 +913,9 @@ elseif ($page === 'siparisler'):
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="action" value="order_status">
                                 <input type="hidden" name="id" value="<?= e($o['id'] ?? '') ?>">
-                                <select name="status" class="status-select st-<?= e($o['status'] ?? 'yeni') ?>" onchange="this.form.submit()">
+                                <select name="status" class="status-select st-<?= e($o['status'] ?? 'odeme-bekliyor') ?>" onchange="this.form.submit()">
                                     <?php foreach ($statuses as $key => $label): ?>
-                                        <option value="<?= e($key) ?>" <?= ($o['status'] ?? 'yeni') === $key ? 'selected' : '' ?>><?= e($label) ?></option>
+                                        <option value="<?= e($key) ?>" <?= ($o['status'] ?? 'odeme-bekliyor') === $key ? 'selected' : '' ?>><?= e($label) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </form>
@@ -904,9 +957,9 @@ elseif ($page === 'siparis-detay'):
                     <input type="hidden" name="action" value="order_status">
                     <input type="hidden" name="id" value="<?= e($order['id']) ?>">
                     <input type="hidden" name="back" value="detay">
-                    <select name="status" class="status-select st-<?= e($order['status'] ?? 'yeni') ?>" onchange="this.form.submit()">
+                    <select name="status" class="status-select st-<?= e($order['status'] ?? 'odeme-bekliyor') ?>" onchange="this.form.submit()">
                         <?php foreach ($statuses as $key => $label): ?>
-                            <option value="<?= e($key) ?>" <?= ($order['status'] ?? 'yeni') === $key ? 'selected' : '' ?>><?= e($label) ?></option>
+                            <option value="<?= e($key) ?>" <?= ($order['status'] ?? 'odeme-bekliyor') === $key ? 'selected' : '' ?>><?= e($label) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </form>
@@ -934,7 +987,7 @@ elseif ($page === 'siparis-detay'):
                     <tr><th>Sipariş No</th><td><strong><?= e($order['no'] ?? '') ?></strong></td></tr>
                     <tr><th>Tarih</th><td><?= e(date('d.m.Y H:i', strtotime($order['created_at'] ?? 'now'))) ?></td></tr>
                     <tr><th>Ödeme Yöntemi</th><td><?= e($methods[$order['payment_method'] ?? '']['label'] ?? ($order['payment_method'] ?? '—')) ?></td></tr>
-                    <tr><th>Durum</th><td><span class="badge st-<?= e($order['status'] ?? 'yeni') ?>"><?= e($statuses[$order['status'] ?? 'yeni'] ?? '') ?></span></td></tr>
+                    <tr><th>Durum</th><td><span class="badge st-<?= e($order['status'] ?? 'odeme-bekliyor') ?>"><?= e($statuses[$order['status'] ?? 'odeme-bekliyor'] ?? '') ?></span></td></tr>
                 </table>
             </div>
         </div>
@@ -1344,6 +1397,67 @@ elseif ($page === 'calisanlar'):
     </div>
 
 <?php
+/* ---------------- SSS Yönetimi ---------------- */
+elseif ($page === 'sss'):
+    $faq = get_faq();
+?>
+    <div class="card">
+        <div class="card-head">
+            <h2>Sık Sorulan Sorular (<?= count($faq) ?>)</h2>
+        </div>
+        <p class="muted pad small" style="padding-bottom:0">Buradaki sorular sitedeki "Sık Sorulan Sorular" sayfasında aynı sırayla yayınlanır. Soru veya cevabı düzenleyip "Kaydet" ile güncelleyebilirsiniz.</p>
+        <?php if (empty($faq)): ?>
+            <p class="muted pad">Henüz soru eklenmemiş.</p>
+        <?php else: ?>
+            <div class="faq-admin-list">
+                <?php foreach ($faq as $i => $f): ?>
+                    <div class="faq-admin-item">
+                        <form method="post" action="oxit.php">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="action" value="faq_update">
+                            <input type="hidden" name="id" value="<?= e($f['id'] ?? '') ?>">
+                            <div class="form-field">
+                                <label>Soru <?= $i + 1 ?></label>
+                                <input type="text" name="question" required value="<?= e($f['question'] ?? '') ?>">
+                            </div>
+                            <div class="form-field" style="margin-top:8px">
+                                <label>Cevap</label>
+                                <textarea name="answer" rows="3" required><?= e($f['answer'] ?? '') ?></textarea>
+                            </div>
+                            <div class="faq-admin-actions">
+                                <button type="submit" class="btn btn-ghost btn-sm">Kaydet</button>
+                            </div>
+                        </form>
+                        <form method="post" action="oxit.php" class="inline-form" data-confirm="Bu soru silinecek. Emin misiniz?">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="action" value="faq_delete">
+                            <input type="hidden" name="id" value="<?= e($f['id'] ?? '') ?>">
+                            <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                        </form>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <div class="card">
+        <div class="card-head"><h2>Yeni Soru Ekle</h2></div>
+        <form method="post" action="oxit.php" class="pad">
+            <?= csrf_field() ?>
+            <input type="hidden" name="action" value="faq_add">
+            <div class="form-field">
+                <label for="faq-q">Soru</label>
+                <input type="text" id="faq-q" name="question" required placeholder="ör. Kargo ücreti ne kadar?">
+            </div>
+            <div class="form-field" style="margin-top:12px">
+                <label for="faq-a">Cevap</label>
+                <textarea id="faq-a" name="answer" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top:14px">Soruyu Ekle</button>
+        </form>
+    </div>
+
+<?php
 /* ---------------- Site Ayarları ---------------- */
 elseif ($page === 'ayarlar'):
     $logoUrl = site_logo_url($settings);
@@ -1381,8 +1495,8 @@ elseif ($page === 'ayarlar'):
                 <textarea id="st-address" name="address" rows="2"><?= e($settings['address']) ?></textarea>
             </div>
             <div class="form-field span-2">
-                <label for="st-about">Hakkımızda</label>
-                <textarea id="st-about" name="about" rows="4"><?= e($settings['about']) ?></textarea>
+                <label for="st-about">Hakkımızda Metni (sitedeki "Hakkımızda" sayfasında yayınlanır)</label>
+                <textarea id="st-about" name="about" rows="10"><?= e($settings['about']) ?></textarea>
             </div>
             <div class="form-field span-2">
                 <label for="st-footer">Alt Bilgi Metni</label>
@@ -1417,13 +1531,14 @@ elseif ($page === 'odeme-ayarlari'):
                 <p class="muted pad">Henüz banka hesabı eklenmemiş. Eklediğiniz hesaplar, müşteri Havale/EFT ile sipariş verdiğinde sipariş onay sayfasındaki ödeme talimatlarında gösterilir.</p>
             <?php else: ?>
                 <table class="table">
-                    <thead><tr><th>Banka</th><th>Hesap Sahibi</th><th>IBAN</th><th class="ta-right">İşlem</th></tr></thead>
+                    <thead><tr><th>Banka</th><th>Hesap Sahibi</th><th>IBAN</th><th>Açıklama</th><th class="ta-right">İşlem</th></tr></thead>
                     <tbody>
                     <?php foreach ($accounts as $acc): ?>
                         <tr>
                             <td><?= ($acc['bank'] ?? '') !== '' ? e($acc['bank']) : '<span class="muted">—</span>' ?></td>
                             <td><strong><?= e($acc['holder'] ?? '') ?></strong></td>
                             <td class="nowrap"><code><?= e(format_iban($acc['iban'])) ?></code></td>
+                            <td><?= !empty($acc['desc_required']) ? '<span class="badge st-odeme-bekliyor">Zorunlu</span>' : '<span class="badge badge-muted">Serbest</span>' ?></td>
                             <td class="ta-right">
                                 <form method="post" action="oxit.php" class="inline-form" data-confirm="Bu banka hesabı silinecek. Emin misiniz?">
                                     <?= csrf_field() ?>
@@ -1456,6 +1571,11 @@ elseif ($page === 'odeme-ayarlari'):
                     <label for="bk-iban">IBAN *</label>
                     <input type="text" id="bk-iban" name="iban" required placeholder="TR00 0000 0000 0000 0000 0000 00" style="text-transform:uppercase">
                 </div>
+                <label class="check" style="margin-top:14px">
+                    <input type="checkbox" name="desc_required">
+                    <span>Ödeme açıklaması zorunlu olsun</span>
+                </label>
+                <p class="muted small" style="margin-top:6px">İşaretlenirse müşteriye, bu hesaba yapılan ödemelerde açıklama alanına sipariş numarasını yazmasının zorunlu olduğu; açıklamasız veya hatalı ödemelerin iade edileceği uyarısı gösterilir.</p>
                 <button type="submit" class="btn btn-primary" style="margin-top:14px">Hesabı Ekle</button>
             </form>
         </div>

@@ -47,6 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($methods[$old['payment']])) {
         $errors[] = 'Geçerli bir ödeme yöntemi seçin.';
     }
+    if (!isset($_POST['payment_terms'])) {
+        $errors[] = 'Siparişi tamamlamak için ödeme koşullarını onaylamanız gerekmektedir.';
+    }
 
     if (empty($errors)) {
         $orderItems = [];
@@ -76,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'items'          => $orderItems,
             'total'          => $total,
             'payment_method' => $old['payment'],
-            'status'         => 'yeni',
+            'status'         => 'odeme-bekliyor',
             'created_at'     => date('c'),
             'updated_at'     => date('c'),
         ];
@@ -159,6 +162,11 @@ require __DIR__ . '/includes/header.php';
                             </span>
                         </label>
                     <?php endforeach; ?>
+
+                    <label class="terms-check">
+                        <input type="checkbox" name="payment_terms" required>
+                        <span>Siparişimin, ödemem hesaba ulaşıp doğrulanmadan <strong>onaylanmayacağını</strong>; ödeme açıklamasına sipariş numaramı yazmam gerektiğini ve açıklaması zorunlu hesaplarda açıklamasız/hatalı ödemelerin <strong>iade edileceğini</strong> okudum, kabul ediyorum.</span>
+                    </label>
                 </div>
             </div>
 

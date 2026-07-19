@@ -34,12 +34,10 @@ require __DIR__ . '/includes/header.php';
                 <?php endif; ?>
             </div>
 
-            <?php if ($settings['about'] !== ''): ?>
             <div class="contact-card">
-                <h3>Hakkımızda</h3>
-                <p><?= nl2br(e($settings['about'])) ?></p>
+                <h3>Çalışma Prensibimiz</h3>
+                <p>Sipariş öncesi parça uyumluluğunu birlikte doğrular, ödemeniz onaylandığında siparişinizi hızla kargoya teslim ederiz. Merak ettikleriniz için <a class="inline-link" href="sss.php">Sık Sorulan Sorular</a> sayfamıza göz atabilir, firmamızı daha yakından tanımak için <a class="inline-link" href="hakkimizda.php">Hakkımızda</a> sayfamızı ziyaret edebilirsiniz.</p>
             </div>
-            <?php endif; ?>
         </div>
     </div>
 </section>
