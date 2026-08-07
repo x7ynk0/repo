@@ -1,0 +1,72 @@
+[
+    {
+        "q": "Bir proje ne kadar sürede tamamlanır?",
+        "a": "Kurumsal web siteleri ortalama 2–4 hafta, e-ticaret projeleri 4–8 hafta, mobil uygulamalar 6–12 hafta, özel yazılım projeleri ise kapsamına göre 8–20 hafta sürer. Keşif görüşmesinin ardından size gün bazında net bir takvim sunuyoruz.",
+        "id": "tjfau1e14442",
+        "order": 1,
+        "active": true
+    },
+    {
+        "q": "Fiyatlandırma nasıl belirleniyor?",
+        "a": "Saatlik ücret yerine sabit proje fiyatı ile çalışıyoruz. Kapsam netleştikten sonra verdiğimiz teklif bağlayıcıdır; kapsam değişmediği sürece ek ücret talep etmeyiz. Ödemeyi genellikle 3 taksite bölüyoruz: başlangıç, ara teslim ve yayın.",
+        "id": "tjfau15ba833",
+        "order": 2,
+        "active": true
+    },
+    {
+        "q": "Kaynak kodun sahibi kim olacak?",
+        "a": "Proje bedeli tamamlandığında kaynak kodun tüm fikri mülkiyet hakları size geçer. Kodu kendi deponuza teslim eder, teknik dokümantasyonu da birlikte veririz. Hiçbir kilitleme (vendor lock-in) uygulamıyoruz.",
+        "id": "tjfau1ffd55a",
+        "order": 3,
+        "active": true
+    },
+    {
+        "q": "Yayına aldıktan sonra destek veriyor musunuz?",
+        "a": "Evet. Tüm projelerde yayın sonrası 3 ay ücretsiz hata giderme desteği vardır. Sonrasında dilerseniz aylık bakım paketimize geçebilirsiniz; kritik arızalarda 2 saat içinde müdahale ediyoruz.",
+        "id": "tjfau10f94c2",
+        "order": 4,
+        "active": true
+    },
+    {
+        "q": "Mevcut sitemi/uygulamamı devralabilir misiniz?",
+        "a": "Evet. Önce ücretsiz bir teknik denetim yapıyor, kod kalitesi ve riskler hakkında rapor sunuyoruz. Ardından devralma, iyileştirme veya yeniden yazma seçeneklerinden hangisinin daha ekonomik olduğunu birlikte kararlaştırıyoruz.",
+        "id": "tjfau12e9a5a",
+        "order": 5,
+        "active": true
+    },
+    {
+        "q": "SEO çalışmasının sonuçlarını ne zaman görürüm?",
+        "a": "Teknik SEO iyileştirmelerinin etkisi genellikle 3–6 hafta içinde görülmeye başlar. İçerik ve otorite çalışmalarının kalıcı etkisi ise 3–6 ay içinde belirginleşir. Her ay ölçülebilir rapor paylaşırız.",
+        "id": "tjfau1389180",
+        "order": 6,
+        "active": true
+    },
+    {
+        "q": "Uzaktan mı çalışıyorsunuz, yüz yüze görüşebilir miyiz?",
+        "a": "Her iki şekilde de çalışıyoruz. Türkiye genelindeki müşterilerimizle çevrim içi görüşüyor, İstanbul içinde talep edilirse yüz yüze toplantı yapıyoruz. Süreç boyunca haftalık ilerleme toplantıları standarttır.",
+        "id": "tjfau1a9a47f",
+        "order": 7,
+        "active": true
+    },
+    {
+        "q": "Verilerimin güvenliği nasıl sağlanıyor?",
+        "a": "Tüm projelerde gizlilik sözleşmesi (NDA) imzalıyoruz. Sunucularda şifreli yedekleme, en az yetki prensibi, KVKK uyumlu veri işleme ve düzenli güvenlik taraması uyguluyoruz.",
+        "id": "tjfau1eac3eb",
+        "order": 8,
+        "active": true
+    },
+    {
+        "q": "Sadece tasarım veya sadece kodlama hizmeti alabilir miyim?",
+        "a": "Evet. Tasarımınız hazırsa yalnızca geliştirme, kod tarafınız hazırsa yalnızca tasarım veya SEO hizmeti verebiliriz. Hizmetlerimiz modülerdir.",
+        "id": "tjfau1943cd9",
+        "order": 9,
+        "active": true
+    },
+    {
+        "q": "Proje sürecinde nasıl iletişim kuracağız?",
+        "a": "Her proje için özel bir iletişim kanalı (Slack/WhatsApp grubu) açıyoruz. Ayrıca canlı bir proje panosu üzerinden görevlerin durumunu anlık takip edebilirsiniz.",
+        "id": "tjfau1e74750",
+        "order": 10,
+        "active": true
+    }
+]

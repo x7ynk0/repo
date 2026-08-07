@@ -1,0 +1,98 @@
+[
+    {
+        "name": "Elif Karaca",
+        "role": "Kurucu Ortak",
+        "company": "Nexora Teknoloji",
+        "rating": 5,
+        "body": "Teknik derinlik kadar iş anlayışları da etkileyici. Karmaşık bir mimariyi sadeleştirip 4 ayda yayına aldılar. Süreç boyunca tek bir sürprizle karşılaşmadık.",
+        "id": "tjfau189ea47",
+        "avatar": "",
+        "order": 1,
+        "active": true,
+        "date": "2026-07-27"
+    },
+    {
+        "name": "Murat Şen",
+        "role": "Pazarlama Direktörü",
+        "company": "Marla Studio",
+        "rating": 5,
+        "body": "Ödeme akışını yeniden tasarladıktan sonra dönüşüm oranımız neredeyse ikiye katlandı. Sadece kod yazmıyorlar; satışa etkisini ölçüyorlar.",
+        "id": "tjfau151f190",
+        "avatar": "",
+        "order": 2,
+        "active": true,
+        "date": "2026-06-20"
+    },
+    {
+        "name": "Dr. Ayşe Yıldız",
+        "role": "Genel Müdür",
+        "company": "Kardio Health",
+        "rating": 5,
+        "body": "Sağlık alanında çalışmak hassasiyet ister. KVKK uyumundan mağaza onay süreçlerine kadar her adımı profesyonelce yönettiler.",
+        "id": "tjfau182b75d",
+        "avatar": "",
+        "order": 3,
+        "active": true,
+        "date": "2026-05-14"
+    },
+    {
+        "name": "Kaan Demirtaş",
+        "role": "CTO",
+        "company": "Bloom CRM",
+        "rating": 5,
+        "body": "Yapay zekâ entegrasyonunda gördüğüm en temiz mimari. Halüsinasyon riskini kaynak doğrulamayla çözmeleri bizim için kritikti.",
+        "id": "tjfau1b90c0f",
+        "avatar": "",
+        "order": 4,
+        "active": true,
+        "date": "2026-04-07"
+    },
+    {
+        "name": "Seda Aksoy",
+        "role": "Kurumsal İletişim Müdürü",
+        "company": "Voltra Enerji",
+        "rating": 5,
+        "body": "4 dilli sitemizi zamanında ve bütçesinde teslim ettiler. Organik trafiğimiz 6 ayda üç katına çıktı. Raporlamaları çok şeffaf.",
+        "id": "tjfau121c942",
+        "avatar": "",
+        "order": 5,
+        "active": true,
+        "date": "2026-03-01"
+    },
+    {
+        "name": "Emre Baştürk",
+        "role": "Operasyon Müdürü",
+        "company": "Rota Lojistik",
+        "rating": 5,
+        "body": "Sahadaki gerçek problemi anlamak için bizimle birlikte araca bindiler. Bu yaklaşım, sonucu doğrudan etkiledi.",
+        "id": "tjfau141e138",
+        "avatar": "",
+        "order": 6,
+        "active": true,
+        "date": "2026-01-23"
+    },
+    {
+        "name": "Zeynep Arslan",
+        "role": "Marka Yöneticisi",
+        "company": "Fusio Kozmetik",
+        "rating": 5,
+        "body": "Sosyal medyada sıfırdan başladık. 6 ay sonra sektörde konuşulan bir marka olduk. Ekip gerçekten veriye bakarak karar veriyor.",
+        "id": "tjfau17de634",
+        "avatar": "",
+        "order": 7,
+        "active": true,
+        "date": "2025-12-17"
+    },
+    {
+        "name": "Onur Çelik",
+        "role": "Genel Koordinatör",
+        "company": "Atlas Gayrimenkul",
+        "rating": 4,
+        "body": "Harita tabanlı arama fikri bizden değil onlardan geldi ve bugün en çok kullanılan özelliğimiz. İyi ki dinlemişiz.",
+        "id": "tjfau1174b91",
+        "avatar": "",
+        "order": 8,
+        "active": true,
+        "date": "2025-11-10"
+    }
+]

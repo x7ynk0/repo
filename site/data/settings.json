@@ -1,0 +1,120 @@
+{
+    "site": {
+        "name": "Oxit Studio",
+        "short_name": "OXIT",
+        "tagline": "Dijital ürünlerinizi kod ile büyütüyoruz",
+        "description": "Web ve mobil uygulama geliştirme, SEO, sosyal medya yönetimi ve dijital dönüşüm hizmetleri. Ölçülebilir sonuç üreten yazılım çözümleri.",
+        "keywords": "web tasarım, yazılım, mobil uygulama, SEO, e-ticaret, sosyal medya yönetimi, yapay zeka entegrasyonu",
+        "logo": "",
+        "favicon": "",
+        "og_image": "",
+        "author": "Oxit Studio",
+        "copyright": "© 2026 Oxit Studio. Tüm hakları saklıdır.",
+        "lang": "tr"
+    },
+    "theme": {
+        "accent": "#7c5cff",
+        "accent2": "#22d3ee",
+        "accent3": "#f472b6",
+        "radius": "18",
+        "mode": "dark",
+        "cursor": true,
+        "preloader": true,
+        "particles": true,
+        "noise": true
+    },
+    "hero": {
+        "badge": "Yeni projeler için müsait",
+        "title_lines": [
+            "Fikirlerinizi",
+            "üretime hazır",
+            "yazılıma çeviriyoruz"
+        ],
+        "rotating": [
+            "Web Uygulamaları",
+            "Mobil Uygulamalar",
+            "E-Ticaret Sistemleri",
+            "SEO & Büyüme",
+            "Yapay Zekâ Entegrasyonu"
+        ],
+        "subtitle": "Kurumsal web sitelerinden ölçeklenebilir SaaS platformlarına kadar; tasarımı, kodu, altyapıyı ve büyüme stratejisini tek elden yönetiyoruz.",
+        "cta_primary": "Ücretsiz Keşif Görüşmesi",
+        "cta_secondary": "Çalışmaları İncele",
+        "code_snippet": "class Project {\n  constructor(idea) {\n    this.idea = idea;\n    this.stack = ['PHP', 'React', 'Node'];\n  }\n\n  ship() {\n    return deploy(this.idea, {\n      speed: '99/100',\n      seo: 'optimized',\n      uptime: '99.9%'\n    });\n  }\n}"
+    },
+    "stats": [
+        {
+            "value": 180,
+            "suffix": "+",
+            "label": "Tamamlanan Proje"
+        },
+        {
+            "value": 96,
+            "suffix": "%",
+            "label": "Müşteri Memnuniyeti"
+        },
+        {
+            "value": 9,
+            "suffix": " yıl",
+            "label": "Sektör Deneyimi"
+        },
+        {
+            "value": 24,
+            "suffix": "/7",
+            "label": "Teknik Destek"
+        }
+    ],
+    "about": {
+        "title": "Kod yazmıyoruz; işinizi büyüten sistemler kuruyoruz",
+        "subtitle": "Hakkımızda",
+        "image": "",
+        "body": "9 yıldır start-up'lardan kurumsal firmalara kadar 180'den fazla dijital ürün geliştirdik. Her projeye \"nasıl yaparız\" sorusundan önce \"neden yapıyoruz\" sorusuyla başlıyoruz.\n\nBizim için bir proje, tasarım dosyası teslim edildiğinde değil; ölçülebilir iş sonucu ürettiğinde biter. Bu yüzden analiz, geliştirme, test, yayına alma ve büyüme aşamalarının hepsinde yanınızdayız.",
+        "highlights": [
+            "Sabit fiyat, sürprizsiz teklif",
+            "Kaynak kodun tamamı size ait",
+            "Yayın sonrası 3 ay ücretsiz destek",
+            "Haftalık ilerleme raporu"
+        ]
+    },
+    "contact": {
+        "email": "merhaba@oxitstudio.com",
+        "phone": "+90 (532) 000 00 00",
+        "whatsapp": "905320000000",
+        "address": "Levent, İstanbul, Türkiye",
+        "work_hours": "Pazartesi – Cuma, 09:00 – 19:00",
+        "map": "",
+        "reply_time": "Ortalama yanıt süresi: 2 saat"
+    },
+    "social": {
+        "github": "https://github.com/",
+        "linkedin": "https://linkedin.com/",
+        "x": "https://x.com/",
+        "instagram": "https://instagram.com/",
+        "youtube": "",
+        "dribbble": "",
+        "behance": ""
+    },
+    "cta": {
+        "title": "Projenizi konuşalım",
+        "subtitle": "İlk görüşme ücretsizdir. 30 dakikada ihtiyacınızı netleştirir, size yol haritası ve net bir bütçe aralığı sunarız.",
+        "button": "Teklif Al"
+    },
+    "seo": {
+        "ga_id": "",
+        "search_console": "",
+        "robots": "index, follow",
+        "canonical": ""
+    },
+    "features": {
+        "blog": true,
+        "testimonials": true,
+        "packages": true,
+        "faq": true,
+        "stats": true,
+        "clients": true
+    },
+    "maintenance": {
+        "enabled": false,
+        "message": "Sitemiz kısa süreli bakımda. Kısa süre içinde geri döneceğiz."
+    }
+}

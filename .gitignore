@@ -1,0 +1,14 @@
+# Çalışma zamanında oluşan veriler
+site/data/users.json
+site/data/logs.json
+site/data/messages.json
+site/data/stats.json
+
+# Yüklenen dosyalar
+site/uploads/*/*
+!site/uploads/*/.gitkeep
+
+# Sistem
+.DS_Store
+Thumbs.db
+*.tmp

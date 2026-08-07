@@ -1,0 +1,73 @@
+[
+    {
+        "title": "Başlangıç",
+        "subtitle": "Yeni markalar ve kişisel projeler için",
+        "price": 24000,
+        "period": "proje başı",
+        "features": [
+            "5 sayfaya kadar kurumsal site",
+            "Mobil uyumlu özel tasarım",
+            "Temel SEO kurulumu",
+            "İletişim formu + WhatsApp",
+            "Yönetim paneli",
+            "1 ay ücretsiz destek"
+        ],
+        "excluded": [
+            "Çok dilli yapı",
+            "E-ticaret modülü",
+            "Aylık içerik üretimi"
+        ],
+        "featured": false,
+        "badge": "",
+        "cta": "Teklif Al",
+        "id": "tjfau1824000",
+        "order": 1,
+        "active": true
+    },
+    {
+        "title": "Profesyonel",
+        "subtitle": "Büyümeye odaklanan işletmeler için",
+        "price": 58000,
+        "period": "proje başı",
+        "features": [
+            "15 sayfaya kadar site + blog",
+            "Özel UI/UX tasarım sistemi",
+            "Gelişmiş teknik SEO paketi",
+            "Çok dilli altyapı",
+            "CRM & analitik entegrasyonu",
+            "Performans optimizasyonu (90+ skor)",
+            "3 ay ücretsiz destek"
+        ],
+        "excluded": [
+            "Mobil uygulama"
+        ],
+        "featured": true,
+        "badge": "En Çok Tercih Edilen",
+        "cta": "Hemen Başlayalım",
+        "id": "tjfau18bf596",
+        "order": 2,
+        "active": true
+    },
+    {
+        "title": "Kurumsal",
+        "subtitle": "Özel yazılım ve ölçekli ihtiyaçlar için",
+        "price": 0,
+        "period": "ihtiyaca göre",
+        "features": [
+            "Sınırsız sayfa & özel modüller",
+            "Özel yazılım / SaaS geliştirme",
+            "Mobil uygulama (iOS + Android)",
+            "DevOps & bulut altyapı kurulumu",
+            "Yapay zekâ entegrasyonu",
+            "Adanmış proje yöneticisi",
+            "SLA taahhütlü 12 ay destek"
+        ],
+        "excluded": [],
+        "featured": false,
+        "badge": "Kurumsal",
+        "cta": "Görüşme Planla",
+        "id": "tjfau1956f5b",
+        "order": 3,
+        "active": true
+    }
+]

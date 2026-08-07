@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Yönetim paneli ve veri dizinleri
+Disallow: /oxit/
+Disallow: /data/
+Disallow: /inc/
+
+Sitemap: /sitemap.php

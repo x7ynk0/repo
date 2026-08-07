@@ -1,0 +1,98 @@
+[
+    {
+        "id": "tjfau1d0cad6",
+        "name": "Nexora",
+        "logo": "",
+        "url": "",
+        "order": 1,
+        "active": true
+    },
+    {
+        "id": "tjfau1bf2a59",
+        "name": "Marla Studio",
+        "logo": "",
+        "url": "",
+        "order": 2,
+        "active": true
+    },
+    {
+        "id": "tjfau1060a87",
+        "name": "Kardio Health",
+        "logo": "",
+        "url": "",
+        "order": 3,
+        "active": true
+    },
+    {
+        "id": "tjfau1a1fd46",
+        "name": "Voltra Enerji",
+        "logo": "",
+        "url": "",
+        "order": 4,
+        "active": true
+    },
+    {
+        "id": "tjfau1be92f5",
+        "name": "Bloom CRM",
+        "logo": "",
+        "url": "",
+        "order": 5,
+        "active": true
+    },
+    {
+        "id": "tjfau1fce979",
+        "name": "Rota Lojistik",
+        "logo": "",
+        "url": "",
+        "order": 6,
+        "active": true
+    },
+    {
+        "id": "tjfau12897c3",
+        "name": "Fusio",
+        "logo": "",
+        "url": "",
+        "order": 7,
+        "active": true
+    },
+    {
+        "id": "tjfau1094f25",
+        "name": "Atlas GYO",
+        "logo": "",
+        "url": "",
+        "order": 8,
+        "active": true
+    },
+    {
+        "id": "tjfau1853299",
+        "name": "Sena Group",
+        "logo": "",
+        "url": "",
+        "order": 9,
+        "active": true
+    },
+    {
+        "id": "tjfau1225f08",
+        "name": "Vertex Yazılım",
+        "logo": "",
+        "url": "",
+        "order": 10,
+        "active": true
+    },
+    {
+        "id": "tjfau15ab124",
+        "name": "Kuzey Bank",
+        "logo": "",
+        "url": "",
+        "order": 11,
+        "active": true
+    },
+    {
+        "id": "tjfau1b690de",
+        "name": "Delta Medya",
+        "logo": "",
+        "url": "",
+        "order": 12,
+        "active": true
+    }
+]

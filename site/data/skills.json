@@ -1,0 +1,114 @@
+[
+    {
+        "name": "PHP / Laravel",
+        "level": 96,
+        "group": "Backend",
+        "id": "tjfau1f4efcd",
+        "order": 1,
+        "active": true
+    },
+    {
+        "name": "JavaScript / TypeScript",
+        "level": 95,
+        "group": "Frontend",
+        "id": "tjfau1c21f15",
+        "order": 2,
+        "active": true
+    },
+    {
+        "name": "React & Next.js",
+        "level": 93,
+        "group": "Frontend",
+        "id": "tjfau1c5b5c3",
+        "order": 3,
+        "active": true
+    },
+    {
+        "name": "Vue & Nuxt",
+        "level": 88,
+        "group": "Frontend",
+        "id": "tjfau16a5aef",
+        "order": 4,
+        "active": true
+    },
+    {
+        "name": "Node.js",
+        "level": 91,
+        "group": "Backend",
+        "id": "tjfau145e968",
+        "order": 5,
+        "active": true
+    },
+    {
+        "name": "Python",
+        "level": 86,
+        "group": "Backend",
+        "id": "tjfau10ca5a5",
+        "order": 6,
+        "active": true
+    },
+    {
+        "name": "React Native",
+        "level": 90,
+        "group": "Mobil",
+        "id": "tjfau169ba35",
+        "order": 7,
+        "active": true
+    },
+    {
+        "name": "Flutter",
+        "level": 82,
+        "group": "Mobil",
+        "id": "tjfau1b8bb69",
+        "order": 8,
+        "active": true
+    },
+    {
+        "name": "PostgreSQL / MySQL",
+        "level": 93,
+        "group": "Veri",
+        "id": "tjfau113a2a1",
+        "order": 9,
+        "active": true
+    },
+    {
+        "name": "Redis / Elasticsearch",
+        "level": 85,
+        "group": "Veri",
+        "id": "tjfau1383423",
+        "order": 10,
+        "active": true
+    },
+    {
+        "name": "Docker & CI/CD",
+        "level": 89,
+        "group": "DevOps",
+        "id": "tjfau1acfcfc",
+        "order": 11,
+        "active": true
+    },
+    {
+        "name": "AWS / Google Cloud",
+        "level": 84,
+        "group": "DevOps",
+        "id": "tjfau10faf8d",
+        "order": 12,
+        "active": true
+    },
+    {
+        "name": "Teknik SEO",
+        "level": 94,
+        "group": "Büyüme",
+        "id": "tjfau167140c",
+        "order": 13,
+        "active": true
+    },
+    {
+        "name": "Figma / UI Sistemleri",
+        "level": 88,
+        "group": "Tasarım",
+        "id": "tjfau1ec44a5",
+        "order": 14,
+        "active": true
+    }
+]

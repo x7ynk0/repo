@@ -1,0 +1,62 @@
+[
+    {
+        "title": "Keşif & Analiz",
+        "icon": "search",
+        "duration": "1. Hafta",
+        "body": "İş hedeflerinizi, hedef kitlenizi ve rakiplerinizi analiz ediyoruz. Çıktı: kapsam dokümanı ve başarı metrikleri.",
+        "id": "tjfau16866bb",
+        "step": 1,
+        "order": 1,
+        "active": true
+    },
+    {
+        "title": "Strateji & Yol Haritası",
+        "icon": "target",
+        "duration": "1 – 2. Hafta",
+        "body": "Teknoloji seçimi, bilgi mimarisi ve sprint planı belirlenir. Net teslim tarihleri ve sabit bütçe onaylanır.",
+        "id": "tjfau1351624",
+        "step": 2,
+        "order": 2,
+        "active": true
+    },
+    {
+        "title": "Tasarım & Prototip",
+        "icon": "palette",
+        "duration": "2 – 4. Hafta",
+        "body": "Wireframe’den yüksek çözünürlüklü tasarıma; tıklanabilir prototiple ürünü kod yazılmadan önce deneyimlersiniz.",
+        "id": "tjfau1d99b64",
+        "step": 3,
+        "order": 3,
+        "active": true
+    },
+    {
+        "title": "Geliştirme",
+        "icon": "terminal",
+        "duration": "4 – 10. Hafta",
+        "body": "İki haftalık sprintlerle geliştirme. Her sprint sonunda çalışan sürümü canlı test ortamında görürsünüz.",
+        "id": "tjfau1b08084",
+        "step": 4,
+        "order": 4,
+        "active": true
+    },
+    {
+        "title": "Test & Kalite Kontrol",
+        "icon": "shield",
+        "duration": "Son 2 Hafta",
+        "body": "Fonksiyonel testler, tarayıcı/cihaz uyumluluğu, performans, güvenlik ve erişilebilirlik denetimi.",
+        "id": "tjfau18be53b",
+        "step": 5,
+        "order": 5,
+        "active": true
+    },
+    {
+        "title": "Yayına Alma & Büyüme",
+        "icon": "rocket",
+        "duration": "Yayın + Sonrası",
+        "body": "Sıfır kesintili yayın, analitik kurulumu, ekip eğitimi ve yayın sonrası büyüme desteği.",
+        "id": "tjfau17aeeb5",
+        "step": 6,
+        "order": 6,
+        "active": true
+    }
+]

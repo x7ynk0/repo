@@ -1,0 +1,134 @@
+[
+    {
+        "title": "Core Web Vitals 2026: Sıralamanızı Etkileyen 5 Metrik",
+        "category": "SEO",
+        "excerpt": "Google'ın kullanıcı deneyimi metrikleri değişti. INP, LCP ve CLS için pratik iyileştirme reçeteleri.",
+        "body": "Google, sayfa deneyimini ölçen metriklerini güncelledi. Artık FID yerine INP (Interaction to Next Paint) kullanılıyor.\n\n## LCP — En Büyük İçerikli Boyama\nHedef: 2,5 saniyenin altı. En sık karşılaştığımız sorun, hero görselinin optimize edilmemiş olması.\n\n- Hero görselini `fetchpriority=\"high\"` ile önceliklendirin\n- WebP/AVIF formatına geçin\n- Kritik CSS'i satır içine alın\n\n## INP — Etkileşimden Sonraki Boyama\nHedef: 200 ms altı. Uzun süren JavaScript görevleri en büyük düşman.\n\n- Uzun görevleri parçalayın\n- Üçüncü parti scriptleri geciktirin\n- Ağır hesaplamaları Web Worker'a taşıyın\n\n## CLS — Kümülatif Düzen Kayması\nHedef: 0,1 altı. Görsellere ve reklam alanlarına mutlaka boyut verin.\n\n## Ölçüm\nLaboratuvar verisi (Lighthouse) ile saha verisi (CrUX) farklıdır. Kararlarınızı saha verisine göre alın.",
+        "tags": [
+            "SEO",
+            "Performans",
+            "Core Web Vitals"
+        ],
+        "id": "tjfau155da0f",
+        "slug": "core-web-vitals-2026-siralamanizi-etkileyen-5-metrik",
+        "image": "",
+        "author": "Oxit Studio",
+        "active": true,
+        "featured": true,
+        "views": 0,
+        "order": 1,
+        "date": "2026-08-05",
+        "created_at": "2026-08-08 02:34:49",
+        "updated_at": "2026-08-08 02:34:49"
+    },
+    {
+        "title": "Mobil Uygulama mı, PWA mı? Karar Ağacı",
+        "category": "Mobil",
+        "excerpt": "Bütçenizi doğru yere harcayın: hangi durumda native, hangi durumda progressive web app mantıklı?",
+        "body": "Her fikir mağazada uygulama olmayı hak etmiyor. Yanlış karar 6 aylık bütçe kaybı demek.\n\n## PWA yeterlidir, eğer:\n- Kullanıcı uygulamayı haftada birkaç kez açacaksa\n- Donanım erişimi (Bluetooth, arka plan konum) gerekmiyorsa\n- Hızlı doğrulama yapmak istiyorsanız\n\n## Native/React Native gereklidir, eğer:\n- Push bildirim dönüşüm stratejinizin merkezindeyse\n- Kamera, biyometri, arka plan senkronu kritikse\n- Mağaza görünürlüğü bir edinim kanalıysa\n\n## Melez yaklaşım\nÇoğu projede en verimli yol: önce PWA ile doğrula, kullanıcı sayısı belirli eşiği geçince React Native'e taşı.",
+        "tags": [
+            "Mobil",
+            "PWA",
+            "Strateji"
+        ],
+        "id": "tjfau12fa8c9",
+        "slug": "mobil-uygulama-mi-pwa-mi-karar-agaci",
+        "image": "",
+        "author": "Oxit Studio",
+        "active": true,
+        "featured": true,
+        "views": 0,
+        "order": 2,
+        "date": "2026-07-25",
+        "created_at": "2026-08-08 02:34:49",
+        "updated_at": "2026-08-08 02:34:49"
+    },
+    {
+        "title": "E-Ticarette Dönüşümü Artıran 12 Mikro Detay",
+        "category": "E-Ticaret",
+        "excerpt": "Büyük yeniden tasarımlara gerek yok. Bu küçük değişiklikler ciroyu ölçülebilir şekilde artırıyor.",
+        "body": "Dönüşüm optimizasyonu genellikle büyük değişikliklerle değil, küçük sürtünmeleri kaldırmakla olur.\n\n## Ürün sayfası\n1. Kargo süresini fiyatın hemen altında gösterin\n2. Stok adedini 5'in altındayken belirtin\n3. Beden tablosunu modal yerine satır içi açın\n4. İade koşullarını tek cümleyle özetleyin\n\n## Sepet\n5. Ücretsiz kargo eşiğine kalan tutarı gösterin\n6. Sepeti oturum kapansa da saklayın\n7. Kupon alanını varsayılan olarak kapalı tutun\n\n## Ödeme\n8. Misafir alışverişi zorunlu olsun\n9. Kart numarası alanında otomatik biçimlendirme yapın\n10. Adres için otomatik tamamlama kullanın\n11. Güvenlik rozetlerini ödeme butonunun yanına koyun\n12. Hata mesajlarını alanın hemen altında gösterin\n\nBu 12 maddeyi uyguladığımız bir projede dönüşüm oranı %64 arttı.",
+        "tags": [
+            "E-Ticaret",
+            "CRO",
+            "UX"
+        ],
+        "id": "tjfau1d0c7a0",
+        "slug": "e-ticarette-donusumu-artiran-12-mikro-detay",
+        "image": "",
+        "author": "Oxit Studio",
+        "active": true,
+        "featured": false,
+        "views": 0,
+        "order": 3,
+        "date": "2026-07-14",
+        "created_at": "2026-08-08 02:34:49",
+        "updated_at": "2026-08-08 02:34:49"
+    },
+    {
+        "title": "Yapay Zekâyı Ürününüze Güvenli Entegre Etmenin 7 Kuralı",
+        "category": "Yapay Zekâ",
+        "excerpt": "LLM eklemek kolay; güvenli, maliyeti kontrollü ve doğru bilgi üreten bir sistem kurmak farklı bir iş.",
+        "body": "LLM entegrasyonlarında en sık gördüğümüz 7 hata ve çözümleri.\n\n## 1. Kaynak doğrulaması olmadan yanıt üretmek\nRAG mimarisi kullanın; model yalnızca sizin dokümanlarınızdan cevap versin ve kaynağı göstersin.\n\n## 2. Maliyet limiti koymamak\nKullanıcı başına ve toplam günlük token kotası tanımlayın.\n\n## 3. Kişisel veriyi doğrudan göndermek\nİstem öncesi maskeleme katmanı ekleyin.\n\n## 4. Emin olmadığında devretmemek\nGüven skoru eşiğin altındaysa insana yönlendirin.\n\n## 5. Yanıtları loglamamak\nDenetim kaydı hem hata ayıklama hem uyum için gerekli.\n\n## 6. İstem enjeksiyonunu göz ardı etmek\nKullanıcı girdisini sistem talimatından katı biçimde ayırın.\n\n## 7. Ölçmemek\nÇözüm oranı, devretme oranı ve memnuniyet skorunu takip edin.",
+        "tags": [
+            "Yapay Zekâ",
+            "LLM",
+            "Güvenlik"
+        ],
+        "id": "tjfau1a532d6",
+        "slug": "yapay-zekayi-urununuze-guvenli-entegre-etmenin-7-kurali",
+        "image": "",
+        "author": "Oxit Studio",
+        "active": true,
+        "featured": false,
+        "views": 0,
+        "order": 4,
+        "date": "2026-07-03",
+        "created_at": "2026-08-08 02:34:49",
+        "updated_at": "2026-08-08 02:34:49"
+    },
+    {
+        "title": "Kurumsal Web Sitesi Brief'i Nasıl Hazırlanır?",
+        "category": "Süreç",
+        "excerpt": "İyi bir brief, projenin süresini %30 kısaltır. İşte doldurmanız gereken başlıklar.",
+        "body": "Ajansa gitmeden önce hazırlayacağınız brief, hem teklifi netleştirir hem süreci hızlandırır.\n\n## Olması gerekenler\n- İş hedefi: Siteden ne bekliyorsunuz? (talep formu, satış, marka bilinirliği)\n- Hedef kitle: Kim, hangi cihazdan, hangi niyetle geliyor?\n- Başarı metriği: Neyi ölçeceğiz?\n- Beğendiğiniz 3 site ve nedenleri\n- Beğenmediğiniz 2 site ve nedenleri\n- Hazır içerik durumu: metin, görsel, video var mı?\n- Bütçe aralığı ve son tarih\n\n## Sık yapılan hata\n\"Rakibimin sitesi gibi olsun\" demek. Rakibinizin sitesi onun iş modeli için tasarlandı; sizinki için değil.",
+        "tags": [
+            "Süreç",
+            "Brief",
+            "Danışmanlık"
+        ],
+        "id": "tjfau1236ad5",
+        "slug": "kurumsal-web-sitesi-brief-i-nasil-hazirlanir",
+        "image": "",
+        "author": "Oxit Studio",
+        "active": true,
+        "featured": false,
+        "views": 0,
+        "order": 5,
+        "date": "2026-06-22",
+        "created_at": "2026-08-08 02:34:49",
+        "updated_at": "2026-08-08 02:34:49"
+    },
+    {
+        "title": "Sosyal Medyada Organik Erişim Öldü mü?",
+        "category": "Sosyal Medya",
+        "excerpt": "Algoritma değişiklikleri sonrası organik büyüme hâlâ mümkün — ama kuralları değişti.",
+        "body": "Organik erişim ölmedi; format ve tutarlılık şartı geldi.\n\n## Bugün işe yarayanlar\n- İlk 3 saniyede net bir vaat sunan kısa video\n- Kaydedilebilir (save-worthy) bilgi içerikleri\n- Yorumlara ilk 60 dakika içinde yanıt\n- Tek konuda derinleşen içerik serileri\n\n## İşe yaramayanlar\n- Aynı içeriği tüm platformlara aynı formatta atmak\n- Sadece ürün tanıtımı yapmak\n- Haftada 1 paylaşımla düzen beklemek\n\n## Doğru ölçüm\nTakipçi sayısı gösterge değildir. Kaydetme, paylaşma ve profil ziyaretinden gelen tıklamayı ölçün.",
+        "tags": [
+            "Sosyal Medya",
+            "İçerik",
+            "Büyüme"
+        ],
+        "id": "tjfau1bb0517",
+        "slug": "sosyal-medyada-organik-erisim-oldu-mu",
+        "image": "",
+        "author": "Oxit Studio",
+        "active": true,
+        "featured": false,
+        "views": 0,
+        "order": 6,
+        "date": "2026-06-11",
+        "created_at": "2026-08-08 02:34:49",
+        "updated_at": "2026-08-08 02:34:49"
+    }
+]
